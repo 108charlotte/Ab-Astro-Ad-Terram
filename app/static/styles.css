@@ -1,0 +1,21 @@
+* {
+  font-family: "Oxanium", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+main {
+    display: flex; 
+    flex-direction: row;
+    gap: 10px; 
+    width: 100%; 
+}
+
+.sidebar {
+    flex: 1; 
+}
+
+.story {
+    flex: 1; 
+}
