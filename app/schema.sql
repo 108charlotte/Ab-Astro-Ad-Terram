@@ -1,0 +1,15 @@
+/* tables:
+ * player (player_id, nickname, current_location_id)
+ * story_log (player_id, entry, timestamp)
+ * quest_log (player_id, quest_id, discovered (true/false), started (true/false), completed (true/false))
+ * quest_definitions (quest_id, quest_name, description)
+ * inventory (player_id, item_id, quantity)
+ * items (item_id, item_name, description)
+ * locations (location_id, location_name, description)
+ * player_locations (player_id, location_id, available (true/false), visited (true/false))
+ * location_links (from_location_id, to_location_id, travel_description, requires_item_id (default NULL), bidirectional (true/false))
+ * story_flags (player_id, flag_name, value)
+ * dialogue_log (player_id, npc_id, dialogue_id, timestamp)
+ * npcs (npc_id, name, description)
+ * dialogue_lines (dialogue_id, npc_id, text, next_dialogue_id, trigger_flag, unlocks_flag)
+*/
