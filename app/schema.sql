@@ -72,6 +72,7 @@ CREATE TABLE [IF NOT EXISTS] location_links (
 
 CREATE TABLE [IF NOT EXISTS] story_flags (
     FOREIGN KEY player_id REFERENCES players(player_id), 
+    story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     flag_name TEXT NOT NULL, 
     value BOOLEAN DEFAULT FALSE
 )
@@ -90,5 +91,7 @@ CREATE TABLE [IF NOT EXISTS] dialogue_lines (
     dialogue_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     FOREIGN KEY npc_id REFERENCES npcs(npc_id), 
     text TEXT, 
-    FOREIGN KEY next_dialogue_id REFERENCES dialogue_lines(dialogue_id)
+    FOREIGN KEY next_dialogue_id REFERENCES dialogue_lines(dialogue_id), 
+    FOREIGN KEY trigger_flag_id REFERENCES story_flags(story_flag_id), 
+    FOREIGN KEY unlocks_flag_id REFERENCES story_flags(story_flag_id)
 )
