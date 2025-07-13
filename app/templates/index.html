@@ -19,10 +19,20 @@
         </span>
     </header>
     <main>
-        <div id="sidebar">help help</div>
-        <div id="story">nope</div>
+        <div id="sidebar">
+            <h3>Quests</h3>
+            {% for quest in quests %}
+                <p><span class="highlighted">{{ quest['quest_name'] }}</span><br><span class="extra-info">{{ quest['description'] }}</span></p>
+            {% endfor %}
+            <h3>Map</h3>
+        </div>
+        <div id="story">
+            {% for story in story_log %}
+                <p>{{ story['entry'] }}</p>
+            {% endfor %}
+        </div>
     </main>
     <footer>
-
+        <p></p>
     </footer>
 </html>

@@ -40,8 +40,7 @@ CREATE TABLE IF NOT EXISTS quest_log (
 CREATE TABLE IF NOT EXISTS quest_definitions (
     quest_id INTEGER, 
     quest_name TEXT NOT NULL,
-    description TEXT, 
-    FOREIGN KEY (quest_id) REFERENCES quest_log(quest_id)
+    description TEXT
 ); 
 
 CREATE TABLE IF NOT EXISTS inventory (

@@ -19,3 +19,8 @@ main {
 .story {
     flex: 1; 
 }
+
+.extra-info {
+    color: grey; 
+    font-size: small; 
+}
