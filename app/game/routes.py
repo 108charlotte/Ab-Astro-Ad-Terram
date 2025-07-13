@@ -1,4 +1,4 @@
-from flask import render_template, session
+from flask import render_template, session, redirect, request, url_for
 from app.game import bp
 from app.db import get_db
 from .utils import initialize_new_player
@@ -18,6 +18,7 @@ def check_player_id_exists():
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
         initialize_new_player(db, session.get('player_id'))
+        return redirect(request.path)
     else:
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
         player = cur.fetchone()
