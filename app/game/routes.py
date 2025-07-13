@@ -1,6 +1,7 @@
 from flask import render_template, session
 from app.game import bp
 from app.db import get_db
+from .utils import initialize_new_player
 
 @bp.before_app_request
 def make_session_permanent(): 
@@ -12,10 +13,11 @@ def check_player_id_exists():
     player_id = session.get('player_id')
 
     if not player_id:
-        cur = db.execute('INSERT INTO players (nickname, current_location_id) VALUES (?, ?)', ('Guest', 0))
+        cur = db.execute('INSERT INTO players (nickname, current_location_id) VALUES (?, ?)', ('Guest', 1))
         db.commit()
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
+        initialize_new_player(db, session.get('player_id'))
     else:
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
         player = cur.fetchone()
@@ -37,15 +39,25 @@ def index():
     story_log = [""]
     location = ""
     if player_id: 
-        # cur = db.execute('SELECT * FROM quest_log WHERE player_id = ?', (player_id,))
-        cur = db.execute('SELECT * FROM quest_definitions')
+        cur = db.execute('''
+            SELECT qd.quest_name, qd.description, ql.discovered, ql.started, ql.completed
+            FROM quest_log ql
+            JOIN quest_definitions qd ON ql.quest_id = qd.quest_id
+            WHERE ql.player_id = ?
+        ''', (player_id,))
         quests = cur.fetchall()
-        cur = db.execute('SELECT * FROM story_log WHERE player_id = ?', (player_id,))
+
+        cur = db.execute('''
+            SELECT fs.entry
+            FROM story_log sl
+            JOIN full_story fs ON sl.story_id = fs.story_element_id
+            WHERE sl.player_id = ?
+        ''', (player_id,))
         story_log = cur.fetchall()
+
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
         player = cur.fetchone()
         location_id = player['current_location_id']
         cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
         location = cur.fetchone()
-        location = location['location_name']
     return render_template('index.html', quests=quests, story_log=story_log, location=location)

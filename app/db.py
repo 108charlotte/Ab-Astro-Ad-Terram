@@ -76,12 +76,13 @@ def populate_db():
     dialogue_log will populate dynamically. 
     npcs needs to be populated. 
     dialogue_lines needs to be populated. 
+    full_story needs to be populated. 
     REMEMBER TO USE INSERT OR IGNORE INTO when populating each table so that I can run this command again to update later. 
     '''
 
     # quest definitions (includes a name and description)
     quests = [
-        (1, "Leave the room", "Exit through the door"), 
+        (0, "Leave the room", "Exit through the door"), 
     ]
     # send quests to database
     for quest_id, name, desc in quests: 
@@ -93,4 +94,10 @@ def populate_db():
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
 
+    story = [
+        (0, "You find yourself in an abandoned control room")
+    ]
+    for story_id, entry in story: 
+        db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry) VALUES (?, ?)", (story_id, entry))
+    
     db.commit()

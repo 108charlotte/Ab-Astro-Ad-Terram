@@ -1,8 +1,28 @@
+/* color scheme
+text: #EAE8FF
+background: #00120B
+faded: #D8D5DB 
+accent: #3056C9
+*/
+
+:root {
+    --background: #00120B; 
+    --text: #EAE8FF; 
+    --faded: #aba7af; 
+    --accent: #5072d6; 
+}
+
 * {
   font-family: "Oxanium", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
+  background-color: var(--background); 
+  color: var(--text); 
+}
+
+#title {
+    color: var(--accent); 
 }
 
 *, *::before, *::after {
@@ -39,9 +59,10 @@ header {
 }
 
 .extra-info {
-    color: grey; 
+    color: var(--faded); 
     font-size: small; 
-    margin-top: 0px; 
+    margin-top: 5px; 
+    margin-bottom: 0px; 
 }
 
 .large {
@@ -59,4 +80,16 @@ header {
 
 h3 {
     margin-bottom: 0px; 
+}
+
+#health {
+    color: rgb(159, 78, 78); 
+}
+
+#mana {
+    color: rgb(92, 133, 151); 
+}
+
+#gold {
+    color: rgb(154, 142, 76); 
 }
