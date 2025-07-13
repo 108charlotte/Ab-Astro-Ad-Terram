@@ -3,6 +3,10 @@ from app.game import bp
 from app.db import get_db
 
 @bp.before_app_request
+def make_session_permanent(): 
+    session.permanent = True
+
+@bp.before_app_request
 def check_player_id_exists():
     db = get_db()
     player_id = session.get('player_id')
