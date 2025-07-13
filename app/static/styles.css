@@ -52,8 +52,15 @@ header {
     height: 10%; 
 }
 
+#sidebar {
+    flex: 3; 
+}
+
+#main-content {
+    flex: 7; 
+}
+
 #sidebar, #main-content {
-    flex: 1; 
     min-width: 0; 
     overflow: hidden; 
 }
