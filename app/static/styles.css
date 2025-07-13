@@ -5,19 +5,33 @@
   font-style: normal;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box; 
+}
+
 main {
     display: flex; 
     flex-direction: row;
     gap: 10px; 
-    width: 100%; 
+    width: 100vw; 
+    height: 50%; 
 }
 
-.sidebar {
-    flex: 1; 
+html {
+    height: 100%;
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden; 
 }
 
-.story {
+header {
+    height: 10%; 
+}
+
+#sidebar, #main-content {
     flex: 1; 
+    min-width: 0; 
+    overflow: hidden; 
 }
 
 .extra-info {

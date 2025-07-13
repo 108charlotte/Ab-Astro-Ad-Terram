@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import os
 
 import click
 from flask import current_app, g
@@ -8,6 +9,7 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
     app.cli.add_command(populate_db_command)
+    app.cli.add_command(reset_db_command)
 
 def get_db(): 
     print('Current config keys:', current_app.config.keys())
@@ -29,6 +31,22 @@ def init_db():
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+
+@click.command('reset-db')
+def reset_db_command(): 
+    close_db()
+    db_path = current_app.config['DATABASE']
+
+    if os.path.exists(db_path): 
+        os.remove(db_path)
+        click.echo(f"Deleted database file at {db_path}")
+    else:
+        click.echo(f"No database file found at {db_path}, skipping delete.")
+
+    with current_app.app_context():
+        init_db()
+        populate_db()
+    click.echo("Database reset: schema re-created and tables populated.")
 
 @click.command('init-db')
 def init_db_command(): 
@@ -69,4 +87,10 @@ def populate_db():
     for quest_id, name, desc in quests: 
         db.execute("INSERT OR IGNORE INTO quest_definitions (quest_id, quest_name, description) VALUES (?, ?, ?)", (quest_id, name, desc))
     
+    locations = [
+        (0, "Control Room", "A dusty old room with storage crates all around and several mysterious-looking switches and buttons")
+    ]
+    for location_id, name, desc in locations:
+        db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
+
     db.commit()

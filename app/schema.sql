@@ -38,14 +38,14 @@ CREATE TABLE IF NOT EXISTS quest_log (
 ); 
 
 CREATE TABLE IF NOT EXISTS quest_definitions (
-    quest_id INTEGER, 
+    quest_id INTEGER PRIMARY KEY, 
     quest_name TEXT NOT NULL,
     description TEXT
 ); 
 
 CREATE TABLE IF NOT EXISTS inventory (
     player_id INTEGER, 
-    item_id INTEGER, 
+    item_id INTEGER PRIMARY KEY, 
     quantity INTEGER DEFAULT 1, 
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (item_id) REFERENCES items(item_id)
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS items (
 ); 
 
 CREATE TABLE IF NOT EXISTS locations (
-    location_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    location_id INTEGER PRIMARY KEY, 
     location_name TEXT NOT NULL, 
     description TEXT
 ); 
