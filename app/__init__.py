@@ -7,7 +7,9 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     from app.main import bp as main_bp
+    from . import db
     app.register_blueprint(main_bp)
+    db.init_app(app)
 
     @app.route('/test/')
     def test_page(): 

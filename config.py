@@ -4,6 +4,5 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config: 
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')\
-        or 'sqlite:///' + os.path.join(basedir, 'app.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    DATABASE = os.path.join(BASEDIR, 'app', 'instance', 'game.sqlite')
