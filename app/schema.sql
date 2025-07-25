@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS players (
 CREATE TABLE IF NOT EXISTS story_log (
     player_id INTEGER, 
     story_id INTEGER, 
+    custom_entry TEXT, 
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
     FOREIGN KEY (player_id) REFERENCES players(player_id), 
     FOREIGN KEY (story_id) REFERENCES full_story(story_element_id)

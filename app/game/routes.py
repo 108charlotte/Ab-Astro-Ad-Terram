@@ -1,10 +1,7 @@
 from flask import render_template, session, redirect, request, url_for
 from app.game import bp
 from app.db import get_db
-from .utils import initialize_new_player, preprocess, parse, get_curr_room
-
-commands = ['inspect', 'grab', 'open']
-objects = ['']
+from .utils import initialize_new_player, preprocess, parse, get_curr_room, process_command
 
 @bp.before_app_request
 def make_session_permanent(): 
@@ -52,10 +49,13 @@ def index():
         quests = cur.fetchall()
 
         cur = db.execute('''
-            SELECT fs.entry, fs.category
+            SELECT 
+                COALESCE(fs.entry, sl.custom_entry) as entry,
+                COALESCE(fs.category, 'Response') as category
             FROM story_log sl
-            JOIN full_story fs ON sl.story_id = fs.story_element_id
+            LEFT JOIN full_story fs ON sl.story_id = fs.story_element_id
             WHERE sl.player_id = ?
+            ORDER BY sl.timestamp ASC
         ''', (player_id,))
         story_log = cur.fetchall()
 
@@ -65,4 +65,7 @@ def index():
 @bp.route('/', methods=['POST'])
 def user_input(): 
     text = request.form['user_input']
+    db = get_db()
+    player_id = session.get('player_id')
+    process_command(text, db, player_id)
     return redirect('/')

@@ -120,3 +120,9 @@ input:focus {
     color: grey; 
     font-size: small; 
 }
+
+#story {
+    max-height: 400px; 
+    overflow-y: auto; 
+    scroll-behavior: smooth; 
+}
