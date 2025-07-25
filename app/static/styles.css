@@ -100,3 +100,23 @@ h3 {
 #gold {
     color: rgb(154, 142, 76); 
 }
+
+input {
+    border: none; 
+    border-bottom: 2px solid white; 
+    color: white; 
+}
+
+input:focus {
+    border: none; 
+    outline: none; 
+}
+
+.Hint {
+    color: rgb(228, 201, 51) !important; 
+}
+
+.Instruction {
+    color: grey; 
+    font-size: small; 
+}

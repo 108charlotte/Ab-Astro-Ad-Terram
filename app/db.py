@@ -95,9 +95,12 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
 
     story = [
-        (0, "You find yourself in an abandoned control room")
+        (0, "You find yourself in an abandoned control room", "Description"), 
+        (1, "What would you like to do?", "Continue"), 
+        (2, "Hint: Try 'inspect boxes'", "Hint"), 
+        (3, "Enter 'help' for assistance.", "Instruction"), 
     ]
-    for story_id, entry in story: 
-        db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry) VALUES (?, ?)", (story_id, entry))
+    for story_id, entry, category in story: 
+        db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry, category) VALUES (?, ?, ?)", (story_id, entry, category))
     
     db.commit()

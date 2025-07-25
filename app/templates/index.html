@@ -32,13 +32,15 @@
             <div id="main-content">
                 <div id="story">
                     {% for story in story_log %}
-                        <p>{{ story['entry'] }}</p>
+                        <p class="{{ story['category'] }}">{{ story['entry'] }}</p>
                     {% endfor %}
                 </div>
                 <div id="input-box">
-                    <p>What would you like to do?</p>
-                    <p>Enter 'help' for assistance. </p>
+                    <form method="post">
+                        <input type="text" id="user_input" name="user_input" autocomplete="off">
+                    </form>
                 </div>
+                
             </div>
         </main>
     </body>

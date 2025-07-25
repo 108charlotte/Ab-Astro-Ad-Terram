@@ -116,5 +116,6 @@ CREATE TABLE IF NOT EXISTS dialogue_lines (
 
 CREATE TABLE IF NOT EXISTS full_story (
     story_element_id INTEGER PRIMARY KEY, 
-    entry TEXT NOT NULL
+    entry TEXT NOT NULL, 
+    category TEXT
 )
