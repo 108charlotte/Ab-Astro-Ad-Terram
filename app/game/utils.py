@@ -42,6 +42,17 @@ def process_command(text, db, player_id):
     text = text.strip().lower()
     if text == "": 
         response = "You must enter a command"
+    elif text == "clear": 
+        db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
+        response = "Story log cleared"
+    elif text == "help": 
+        response = "The available commands are "
+        for i, command in enumerate(commands): 
+            if i == len(commands) - 1: 
+                response += command + ". "
+            else: 
+                response += command + ", "
+        response += ""
     else: 
         parts = text.split()
         response = parse(parts, db)

@@ -103,4 +103,9 @@ def populate_db():
     for story_id, entry, category in story: 
         db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry, category) VALUES (?, ?, ?)", (story_id, entry, category))
     
+    objects = [
+        (0, 0, "Boxes")
+    ]
+    for object_id, location_id, name in objects: 
+        db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name) VALUES (?, ?, ?)", (object_id, location_id, name,))
     db.commit()

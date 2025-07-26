@@ -119,4 +119,18 @@ CREATE TABLE IF NOT EXISTS full_story (
     story_element_id INTEGER PRIMARY KEY, 
     entry TEXT NOT NULL, 
     category TEXT
-)
+); 
+
+/* table for items in each room, by location id */
+
+/* 
+
+*/
+
+CREATE TABLE IF NOT EXISTS objects (
+    object_id INTEGER PRIMARY KEY, 
+    location_id INTEGER, 
+    primary_name_id INTEGER, 
+    name TEXT NOT NULL, 
+    FOREIGN KEY (location_id) REFERENCES locations(location_id), 
+); 
