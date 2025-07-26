@@ -108,8 +108,12 @@ input {
 }
 
 input:focus {
-    border: none; 
-    outline: none; 
+    animation: animation 0.01s infinite; 
+}
+
+@keyframes animation {
+    0% { border: none; border-bottom: 2px solid white; outline: none; }
+    100% { border: none; outline: none; }
 }
 
 .Hint {
