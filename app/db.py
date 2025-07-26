@@ -103,9 +103,17 @@ def populate_db():
     for story_id, entry, category in story: 
         db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry, category) VALUES (?, ?, ?)", (story_id, entry, category))
     
+    # if the object description is empty, i need to check the description of the entry corresponding to its primary_name_id
     objects = [
-        (0, 0, "Boxes")
+        (0, 0, 0, "Crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
+        (1, 0, 0, "Boxes", ""), 
+        (2, 0, 2, "Door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
+        (3, 0, 2, "Exit", ""), 
+        (4, 0, 4, "Control Panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
+        (5, 0, 5, "Switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. "), 
+        (6, 0, 5, "Levers", ""), 
+        (7, 0, 5, "Buttons", "")
     ]
-    for object_id, location_id, name in objects: 
-        db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name) VALUES (?, ?, ?)", (object_id, location_id, name,))
+    for object_id, location_id, primary_name_id, name, description in objects: 
+        db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, primary_name_id, name, description) VALUES (?, ?, ?, ?, ?)", (object_id, location_id, primary_name_id, name, description))
     db.commit()

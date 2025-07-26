@@ -9,62 +9,64 @@ def initialize_new_player(db, player_id, num_initial):
     db.execute('UPDATE players SET current_location_id = ? WHERE player_id = ?', (0, player_id))
     db.commit()
 
-def preprocess(text, db): 
+def process(text, db, player_id): 
     text = text.strip().lower()
     s = ""
-    if text == "": 
-        s = "You must enter a command"
-    else: 
-        parts = text.split()
-        s = parse(parts, db)
+    parts = text.split()
+    s = parse(parts, db, player_id)
+    db.execute('INSERT INTO story_log (player_id, custom_entry) VALUES (?, ?)', (player_id, s))
+    db.commit()
     return s
 
 commands = ['inspect', 'grab', 'open']
-objects = ['boxes', 'door', 'switches', 'crates', 'control panel']
 
-def parse(parts, db): 
-    room = get_curr_room(db=db)
-    s = ""
-    if len(parts) < 2: 
-        s = "Please enter at least a command and an object"
-    elif parts[0] not in commands: 
-        s = "Please enter a valid command (inspect, grab, open)"
-    elif parts[1] not in objects: 
-        s = "Please enter a valid object: "
-        for i, object in enumerate(objects): 
-            if i == len(objects) - 1: 
-                s += object
-            else: 
-                s += object + ", "
-    return s
-
-def process_command(text, db, player_id): 
-    text = text.strip().lower()
-    if text == "": 
-        response = "You must enter a command"
-    elif text == "clear": 
+def parse(parts, db, player_id): 
+    response = ""
+    room_id = get_curr_room_id(db=db)
+    cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
+    object_entries = cur.fetchall()
+    objects = []
+    for i, object in enumerate(object_entries): 
+        if object['description'] is not None and object['description'] != "": 
+            objects.append(object['name'])   
+    if parts[0] == "clear": 
         db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
         response = "Story log cleared"
-    elif text == "help": 
+        return response
+    elif parts[0] == "help": 
         response = "The available commands are "
         for i, command in enumerate(commands): 
             if i == len(commands) - 1: 
                 response += command + ". "
             else: 
                 response += command + ", "
-        response += ""
-    else: 
-        parts = text.split()
-        response = parse(parts, db)
+    elif len(parts) < 2: 
+        response = "Please enter at least a command and an object"
+        return response
+    elif parts[0] not in commands: 
+        response = "Please enter a valid command (inspect, grab, open)"
+        return response
+    elif parts[1] not in objects: 
+        response = "Please enter a valid object: "
+        for i, object in enumerate(objects): 
+            if i == len(objects) - 1: 
+                response += object
+            else: 
+                response += object + ", "
+        return response
+    elif parts[0] == "inspect": 
+        object_name = parts[1]
+        cur = db.execute('SELECT * FROM objects WHERE name = ?', (object_name, ))
+        direct_object = cur.fetchone()
+        response = direct_object['description']
     
-    db.execute('INSERT INTO story_log (player_id, custom_entry) VALUES (?, ?)', (player_id, response))
     db.commit()
+    
+    return response
 
-def get_curr_room(db): 
+def get_curr_room_id(db): 
     player_id = session.get('player_id')
     cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
     player = cur.fetchone()
     location_id = player['current_location_id']
-    cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
-    location = cur.fetchone()
-    return location
+    return location_id

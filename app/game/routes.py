@@ -1,7 +1,7 @@
 from flask import render_template, session, redirect, request, url_for
 from app.game import bp
 from app.db import get_db
-from .utils import initialize_new_player, preprocess, parse, get_curr_room, process_command
+from .utils import initialize_new_player, process, parse, get_curr_room_id
 
 @bp.before_app_request
 def make_session_permanent(): 
@@ -59,7 +59,12 @@ def index():
         ''', (player_id,))
         story_log = cur.fetchall()
 
-        location = get_curr_room(db=db)
+        cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
+        player = cur.fetchone()
+        location_id = player['current_location_id']
+        cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
+        location = cur.fetchone()
+        
     return render_template('index.html', quests=quests, story_log=story_log, location=location)
 
 @bp.route('/', methods=['POST'])
@@ -67,5 +72,5 @@ def user_input():
     text = request.form['user_input']
     db = get_db()
     player_id = session.get('player_id')
-    process_command(text, db, player_id)
+    process(text, db, player_id)
     return redirect('/')

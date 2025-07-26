@@ -132,5 +132,6 @@ CREATE TABLE IF NOT EXISTS objects (
     location_id INTEGER, 
     primary_name_id INTEGER, 
     name TEXT NOT NULL, 
-    FOREIGN KEY (location_id) REFERENCES locations(location_id), 
+    description TEXT, 
+    FOREIGN KEY (location_id) REFERENCES locations(location_id) 
 ); 
