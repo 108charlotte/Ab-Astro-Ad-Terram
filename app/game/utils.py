@@ -26,9 +26,10 @@ def parse(parts, db, player_id):
     cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
     object_entries = cur.fetchall()
     objects = []
+    # need to update for multi-word objects
     for i, object in enumerate(object_entries): 
         if object['description'] is not None and object['description'] != "": 
-            objects.append(object['name'])   
+            objects.append(object['name'].lower())   
     if parts[0] == "clear": 
         db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
         response = "Story log cleared"

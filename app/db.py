@@ -105,14 +105,14 @@ def populate_db():
     
     # if the object description is empty, i need to check the description of the entry corresponding to its primary_name_id
     objects = [
-        (0, 0, 0, "Crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
-        (1, 0, 0, "Boxes", ""), 
-        (2, 0, 2, "Door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
-        (3, 0, 2, "Exit", ""), 
-        (4, 0, 4, "Control Panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
-        (5, 0, 5, "Switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. "), 
-        (6, 0, 5, "Levers", ""), 
-        (7, 0, 5, "Buttons", "")
+        (0, 0, 0, "crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
+        (1, 0, 0, "boxes", ""), 
+        (2, 0, 2, "door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
+        (3, 0, 2, "exit", ""), 
+        (4, 0, 4, "control panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
+        (5, 0, 5, "switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. "), 
+        (6, 0, 5, "levers", ""), 
+        (7, 0, 5, "buttons", "")
     ]
     for object_id, location_id, primary_name_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, primary_name_id, name, description) VALUES (?, ?, ?, ?, ?)", (object_id, location_id, primary_name_id, name, description))
