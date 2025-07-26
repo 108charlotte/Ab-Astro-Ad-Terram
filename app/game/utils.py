@@ -47,7 +47,7 @@ def parse(parts, db, player_id):
     elif parts[0] not in commands: 
         response = "Please enter a valid command (inspect, grab, open)"
         return response
-    elif parts[1] not in objects: 
+    elif parts[1] not in objects and not (parts[1] + " "+ parts[2]) in objects: 
         response = "Please enter a valid object: "
         for i, object in enumerate(objects): 
             if i == len(objects) - 1: 
@@ -56,7 +56,10 @@ def parse(parts, db, player_id):
                 response += object + ", "
         return response
     elif parts[0] == "inspect": 
-        object_name = parts[1]
+        if len(parts) > 2: 
+            object_name = parts[1] + " " + parts[2]
+        else: 
+            object_name = parts[1]
         cur = db.execute('SELECT * FROM objects WHERE name = ?', (object_name, ))
         direct_object = cur.fetchone()
         response = direct_object['description']
