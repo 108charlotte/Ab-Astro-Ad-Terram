@@ -62,6 +62,7 @@ def parse(parts, db, player_id):
             object_name = parts[1]
         cur = db.execute('SELECT * FROM objects WHERE name = ?', (object_name, ))
         direct_object = cur.fetchone()
+        # need to add story flag for boxes inspected
         response = direct_object['description']
     
     db.commit()

@@ -116,4 +116,9 @@ def populate_db():
     ]
     for object_id, location_id, primary_name_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, primary_name_id, name, description) VALUES (?, ?, ?, ?, ?)", (object_id, location_id, primary_name_id, name, description))
+    
+    story_flags = [
+        (), 
+        (), 
+    ]
     db.commit()

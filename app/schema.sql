@@ -81,11 +81,15 @@ CREATE TABLE IF NOT EXISTS location_links (
     FOREIGN KEY (from_location_id) REFERENCES locations(location_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS story_flags (
+CREATE TABLE IF NOT EXISTS triggered_story_flags (
     player_id INTEGER, 
+    story_flag_id INTEGER
+)
+
+CREATE TABLE IF NOT EXISTS story_flags (
     story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     flag_name TEXT NOT NULL, 
-    value BOOLEAN DEFAULT FALSE, 
+    when_triggered TEXT, 
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 ); 
 
@@ -124,7 +128,7 @@ CREATE TABLE IF NOT EXISTS full_story (
 /* table for items in each room, by location id */
 
 /* 
-
+may change architecture so that certain commands called on certain objects will activate story flags, but idk how to do that rn and I will have to brainstorm more on the architecture
 */
 
 CREATE TABLE IF NOT EXISTS objects (
@@ -133,5 +137,11 @@ CREATE TABLE IF NOT EXISTS objects (
     primary_name_id INTEGER, 
     name TEXT NOT NULL, 
     description TEXT, 
-    FOREIGN KEY (location_id) REFERENCES locations(location_id) 
+    inspect_flag_id INTEGER, 
+    grab_flag_id INTEGER, 
+    open_flag_id INTEGER, 
+    FOREIGN KEY (location_id) REFERENCES locations(location_id), 
+    FOREIGN KEY (inspect_flag_id) REFERENCES story_flags(story_flag_id), 
+    FOREIGN KEY (grab_flag_id) REFERENCES story_flags(story_flag_id), 
+    FOREIGN KEY (open_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
