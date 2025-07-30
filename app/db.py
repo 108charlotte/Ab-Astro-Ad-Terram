@@ -106,19 +106,38 @@ def populate_db():
     # if the object description is empty, i need to check the description of the entry corresponding to its primary_name_id
     objects = [
         (0, 0, 0, "crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
-        (1, 0, 0, "boxes", ""), 
-        (2, 0, 2, "door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
-        (3, 0, 2, "exit", ""), 
-        (4, 0, 4, "control panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
-        (5, 0, 5, "switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. "), 
-        (6, 0, 5, "levers", ""), 
-        (7, 0, 5, "buttons", "")
+        (1, 0, 2, "door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
+        (2, 0, 4, "control panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
+        (3, 0, 5, "switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. ")
     ]
     for object_id, location_id, primary_name_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, primary_name_id, name, description) VALUES (?, ?, ?, ?, ?)", (object_id, location_id, primary_name_id, name, description))
     
-    story_flags = [
-        (), 
-        (), 
+    object_synonyms = [
+        (0, "boxes"), 
+        (1, "exit"), 
+        (3, "levers"), 
+        (3, "buttons")
     ]
+    for object_id, synonym in object_synonyms: 
+        db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
+
+    story_flags = [
+        (0, "Control room activated"), 
+        (1, "Key grabbed"), 
+    ]
+    for story_flag_id, name in story_flags: 
+        db.execute("INSERT OR IGNORE INTO story_flags (story_flag_id, flag_name) VALUES (?, ?)", (story_flag_id, name))
+    
+    items = [
+        (0, "key", "A small brass key with a diamond tail."), 
+    ]
+    for item_id, name, description in items: 
+        db.execute("INSERT OR IGNORE INTO items (item_id, item_name, description) VALUES (?, ?, ?)", (item_id, name, description))
+    
+    object_contents = [
+        (0, 0), 
+    ]
+    for object_id, item_id in object_contents: 
+        db.execute("INSERT OR IGNORE INTO object_contents (object_id, item_id) VALUES (?, ?)", (object_id, item_id))
     db.commit()

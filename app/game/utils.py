@@ -26,10 +26,14 @@ def parse(parts, db, player_id):
     cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
     object_entries = cur.fetchall()
     objects = []
+    objects_plus_synonyms = []
     # need to update for multi-word objects
     for i, object in enumerate(object_entries): 
-        if object['description'] is not None and object['description'] != "": 
-            objects.append(object['name'].lower())   
+        objects.append(object['name'].lower())
+        cur = db.execute('SELECT * FROM object_synonyms WHERE object_id = ?', (object['object_id']))
+        synonyms = cur.fetchall()
+        for i, synonym in synonyms: 
+            objects_plus_synonyms.append(synonym)
     if parts[0] == "clear": 
         db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
         response = "Story log cleared"
@@ -47,7 +51,7 @@ def parse(parts, db, player_id):
     elif parts[0] not in commands: 
         response = "Please enter a valid command (inspect, grab, open)"
         return response
-    elif parts[1] not in objects and not (parts[1] + " "+ parts[2]) in objects: 
+    elif parts[1] not in objects_plus_synonyms and not (parts[1] + " "+ parts[2]) in objects_plus_synonyms: 
         response = "Please enter a valid object: "
         for i, object in enumerate(objects): 
             if i == len(objects) - 1: 
@@ -62,8 +66,7 @@ def parse(parts, db, player_id):
             object_name = parts[1]
         cur = db.execute('SELECT * FROM objects WHERE name = ?', (object_name, ))
         direct_object = cur.fetchone()
-        # need to add story flag for boxes inspected
-        response = direct_object['description']
+        response = direct_object['description'] 
     
     db.commit()
     

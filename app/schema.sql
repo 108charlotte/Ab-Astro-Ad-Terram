@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS quest_definitions (
 
 CREATE TABLE IF NOT EXISTS inventory (
     player_id INTEGER, 
-    item_id INTEGER PRIMARY KEY, 
+    item_id INTEGER, 
+    PRIMARY KEY (player_id, item_id), 
     quantity INTEGER DEFAULT 1, 
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (item_id) REFERENCES items(item_id)
@@ -68,29 +69,36 @@ CREATE TABLE IF NOT EXISTS locations (
 
 CREATE TABLE IF NOT EXISTS player_locations (
     player_id INTEGER, 
+    location_id INTEGER, 
     unlocked BOOLEAN DEFAULT FALSE, 
     visited BOOLEAN DEFAULT FALSE, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id)
+    PRIMARY KEY (player_id, location_id),
+    FOREIGN KEY (player_id) REFERENCES players(player_id), 
+    FOREIGN KEY (location_id) REFERENCES locations(location_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS location_links (
     to_location_id INTEGER, 
     from_location_id INTEGER, 
     travel_description TEXT, 
+    requires_item_id INTEGER, 
+    unlocks_flag_id INTEGER, 
     FOREIGN KEY (to_location_id) REFERENCES locations(location_id), 
-    FOREIGN KEY (from_location_id) REFERENCES locations(location_id)
+    FOREIGN KEY (from_location_id) REFERENCES locations(location_id), 
+    FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
+    FOREIGN KEY (unlocks_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS triggered_story_flags (
     player_id INTEGER, 
-    story_flag_id INTEGER
-)
+    story_flag_id INTEGER, 
+    FOREIGN KEY (player_id) REFERENCES players(player_id),
+    FOREIGN KEY (story_flag_id) REFERENCES story_flags(story_flag_id)
+); 
 
 CREATE TABLE IF NOT EXISTS story_flags (
     story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    flag_name TEXT NOT NULL, 
-    when_triggered TEXT, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id)
+    flag_name TEXT NOT NULL
 ); 
 
 CREATE TABLE IF NOT EXISTS dialogue_log (
@@ -133,15 +141,35 @@ may change architecture so that certain commands called on certain objects will 
 
 CREATE TABLE IF NOT EXISTS objects (
     object_id INTEGER PRIMARY KEY, 
-    location_id INTEGER, 
-    primary_name_id INTEGER, 
+    location_id INTEGER,  
     name TEXT NOT NULL, 
     description TEXT, 
-    inspect_flag_id INTEGER, 
-    grab_flag_id INTEGER, 
-    open_flag_id INTEGER, 
-    FOREIGN KEY (location_id) REFERENCES locations(location_id), 
-    FOREIGN KEY (inspect_flag_id) REFERENCES story_flags(story_flag_id), 
-    FOREIGN KEY (grab_flag_id) REFERENCES story_flags(story_flag_id), 
-    FOREIGN KEY (open_flag_id) REFERENCES story_flags(story_flag_id)
+    FOREIGN KEY (location_id) REFERENCES locations(location_id)
+);
+
+CREATE TABLE IF NOT EXISTS object_interactions (
+    interaction_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    object_id INTEGER, 
+    action TEXT NOT NULL, 
+    result_text TEXT, 
+    requires_item_id INTEGER, 
+    gives_item_id INTEGER, 
+    FOREIGN KEY (object_id) REFERENCES objects(object_id), 
+    FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
+    FOREIGN KEY (gives_item_id) REFERENCES items(item_id)
+); 
+
+CREATE TABLE IF NOT EXISTS object_contents (
+    container_object_id INTEGER, 
+    item_id INTEGER, 
+    PRIMARY KEY (container_object_id, item_id), 
+    FOREIGN KEY (container_object_id) REFERENCES objects(object_id), 
+    FOREIGN KEY (item_id) REFERENCES items(item_id)
+); 
+
+CREATE TABLE IF NOT EXISTS object_synonyms (
+    object_id INTEGER, 
+    synonym TEXT, 
+    PRIMARY KEY (object_id, synonym), 
+    FOREIGN KEY (object_id) REFERENCES objects(object_id)
 ); 
