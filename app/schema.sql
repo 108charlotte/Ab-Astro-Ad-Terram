@@ -148,10 +148,10 @@ CREATE TABLE IF NOT EXISTS objects (
 );
 
 CREATE TABLE IF NOT EXISTS object_interactions (
-    interaction_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    interaction_id INTEGER PRIMARY KEY, 
     object_id INTEGER, 
     action TEXT NOT NULL, 
-    result_text TEXT, 
+    result TEXT, 
     requires_item_id INTEGER, 
     gives_item_id INTEGER, 
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
@@ -162,9 +162,12 @@ CREATE TABLE IF NOT EXISTS object_interactions (
 CREATE TABLE IF NOT EXISTS object_contents (
     container_object_id INTEGER, 
     item_id INTEGER, 
+    description TEXT, 
+    requires_item_id INTEGER, 
     PRIMARY KEY (container_object_id, item_id), 
     FOREIGN KEY (container_object_id) REFERENCES objects(object_id), 
-    FOREIGN KEY (item_id) REFERENCES items(item_id)
+    FOREIGN KEY (item_id) REFERENCES items(item_id), 
+    FOREIGN KEY (requires_item_id) REFERENCES items(item_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS object_synonyms (

@@ -91,11 +91,11 @@ def populate_db():
     locations = [
         (0, "Secondary Control Room", "A dusty old room with storage crates all around and several mysterious-looking switches and buttons"), 
         (1, "Upper Hallway", "A long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
-        (2, "Captain's Quarters"), 
-        (3, "Pilot's Quarters"),
-        (4, "Chief Engineer's Quarters"), 
-        (5, "Scientific Supervisor's Quarters"), 
-        (6, "Chief Medical Consultant's Quarters")
+        (2, "Captain's Quarters", ""), 
+        (3, "Pilot's Quarters", ""),
+        (4, "Chief Engineer's Quarters", ""), 
+        (5, "Scientific Supervisor's Quarters", ""), 
+        (6, "Chief Medical Consultant's Quarters", "")
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
@@ -112,7 +112,7 @@ def populate_db():
         (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None)
     ]
     for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
-        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) = (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
+        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
 
     story = [
         (0, "You find yourself in an abandoned control room", "Description"), 
@@ -156,8 +156,17 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO items (item_id, item_name, description) VALUES (?, ?, ?)", (item_id, name, description))
     
     object_contents = [
-        (0, 0), 
+        # description will be printed, the fact that there is no requires_item_id will be checked and since there is none, a message will be printed saying the key (corresponding to item_id) has been added to the player's inventory
+        (0, 0, "After inspecting the slightly ajar crate, you", None), 
     ]
-    for object_id, item_id in object_contents: 
-        db.execute("INSERT OR IGNORE INTO object_contents (container_object_id, item_id) VALUES (?, ?)", (object_id, item_id))
+    for object_id, item_id, description, requires_item_id in object_contents: 
+        db.execute("INSERT OR IGNORE INTO object_contents (container_object_id, item_id, description, requires_item_id) VALUES (?, ?, ?, ?)", (object_id, item_id, description, requires_item_id))
+
+    object_interactions = [
+        (0, 0, "inspect", "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", None, 0), 
+        (1, 0, "open", "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", None, 0)
+    ]
+    for interaction_id, object_id, action, result, requires_item_id, gives_item_id in object_interactions: 
+        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, result, requires_item_id, gives_item_id) VALUES (?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, result, requires_item_id, gives_item_id))
+    
     db.commit()

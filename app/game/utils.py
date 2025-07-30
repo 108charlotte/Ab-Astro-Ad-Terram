@@ -43,7 +43,7 @@ def parse(parts, db, player_id):
                 response = "The only valid one-word commands are 'clear' and 'help'"
         return response
     else: 
-        command = parts[0]
+        command = parts[0].lower()
         if command in commands: 
             # get the objects currently in the room
             room_id = get_curr_room_id(db=db)
@@ -68,7 +68,14 @@ def parse(parts, db, player_id):
             
             # check if the target object is valid
             if target_object in object_names_to_ids: 
-                response = "All valid. Populate logic later. "
+                target_object_id = object_names_to_ids[target_object]
+                cur = db.execute("SELECT * FROM object_interactions WHERE object_id = ? AND action = ?", (target_object_id, command))
+                interaction_row = cur.fetchone()
+                if interaction_row: 
+                    response = interaction_row['result']
+                else: 
+                    response = "You cannot use the command " + command + " on the " + target_object
+                
             else: 
                 response = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())
