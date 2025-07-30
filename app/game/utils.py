@@ -20,23 +20,57 @@ def process(text, db, player_id):
 
 commands = ['inspect', 'grab', 'open']
 
+# TODO: #1 clean this up
 def parse(parts, db, player_id): 
     response = ""
+    if len(parts) < 1: 
+        response = "Please enter at least one word"
+    elif len(parts) < 2: 
+        command = parts[0]
+        match command: 
+            case "clear": 
+                db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
+                response = "Story log cleared"
+            case "help": 
+                response = "The available commands are "
+                for i, command in enumerate(commands): 
+                    if i == len(commands) - 1: 
+                        response += command + ". "
+                    else: 
+                        response += command + ", "
+                response += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands."
+            case _: 
+                print("The only valid one-word commands are 'clear' and 'help'")
+    else: 
+        command = parts[0]
+        if command in commands: 
+            if "with" in parts: 
+                with_index = parts.index("with")
+                target_object_items = parts[1:with_index - 1]
+                target_object = ""
+                for i in range(len(target_object_items)): 
+                    target_object += target_object_items[i]
+                    if i != len(target_object_items) - 1: 
+                        target_object += " "
+            else: 
+
+
+
+    return response
     room_id = get_curr_room_id(db=db)
     cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
     object_entries = cur.fetchall()
     objects = []
-    objects_plus_synonyms = []
+    name_to_object = {}
     # need to update for multi-word objects
     for i, object in enumerate(object_entries): 
         objects.append(object['name'].lower())
+        name_to_object[object['name'].lower()] = object
         cur = db.execute('SELECT * FROM object_synonyms WHERE object_id = ?', (object['object_id']))
         synonyms = cur.fetchall()
-        for i, synonym in synonyms: 
-            objects_plus_synonyms.append(synonym)
+        for row in synonyms: 
+            name_to_object[row['synonym'].lower()] = object
     if parts[0] == "clear": 
-        db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
-        response = "Story log cleared"
         return response
     elif parts[0] == "help": 
         response = "The available commands are "
@@ -51,7 +85,7 @@ def parse(parts, db, player_id):
     elif parts[0] not in commands: 
         response = "Please enter a valid command (inspect, grab, open)"
         return response
-    elif parts[1] not in objects_plus_synonyms and not (parts[1] + " "+ parts[2]) in objects_plus_synonyms: 
+    elif parts[1] not in name_to_object and not (parts[1] + " "+ parts[2]) in name_to_object: 
         response = "Please enter a valid object: "
         for i, object in enumerate(objects): 
             if i == len(objects) - 1: 
@@ -59,14 +93,19 @@ def parse(parts, db, player_id):
             else: 
                 response += object + ", "
         return response
-    elif parts[0] == "inspect": 
+    else: 
         if len(parts) > 2: 
             object_name = parts[1] + " " + parts[2]
         else: 
             object_name = parts[1]
-        cur = db.execute('SELECT * FROM objects WHERE name = ?', (object_name, ))
-        direct_object = cur.fetchone()
-        response = direct_object['description'] 
+        
+        if object_name not in name_to_object: 
+            # should never occur bc earlier check
+            return "Please enter a valid object"
+        
+        if parts[0] == "inspect": 
+            direct_object = name_to_object[object_name]
+            response = direct_object['description'] 
     
     db.commit()
     
