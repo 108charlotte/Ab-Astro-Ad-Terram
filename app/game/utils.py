@@ -66,6 +66,9 @@ def parse(parts, db, player_id):
                 target_object_items = parts[1:]
                 target_object = build_string_of_list(target_object_items)
             
+            # TODO: when entering a new room, all object descriptions should be printed
+            # TODO: work on location linking logic for actual player movement
+            # TODO: enable inventory additions for object interactions
             # check if the target object is valid
             if target_object in object_names_to_ids: 
                 target_object_id = object_names_to_ids[target_object]
