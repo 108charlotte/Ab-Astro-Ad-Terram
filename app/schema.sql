@@ -21,6 +21,17 @@ CREATE TABLE IF NOT EXISTS players (
     FOREIGN KEY (current_location_id) REFERENCES locations(location_id)
 ); 
 
+CREATE TABLE IF NOT EXISTS full_story (
+    story_element_id INTEGER PRIMARY KEY, 
+    entry TEXT NOT NULL, 
+    category TEXT
+); 
+
+CREATE TABLE IF NOT EXISTS story_flags (
+    story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    flag_name TEXT NOT NULL
+); 
+
 CREATE TABLE IF NOT EXISTS story_log (
     player_id INTEGER, 
     story_id INTEGER, 
@@ -49,8 +60,8 @@ CREATE TABLE IF NOT EXISTS quest_definitions (
 CREATE TABLE IF NOT EXISTS inventory (
     player_id INTEGER, 
     item_id INTEGER, 
-    PRIMARY KEY (player_id, item_id), 
-    quantity INTEGER DEFAULT 1, 
+    quantity INTEGER DEFAULT 1,
+    PRIMARY KEY (player_id, item_id),  
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (item_id) REFERENCES items(item_id)
 ); 
@@ -96,19 +107,6 @@ CREATE TABLE IF NOT EXISTS triggered_story_flags (
     FOREIGN KEY (story_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS story_flags (
-    story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    flag_name TEXT NOT NULL
-); 
-
-CREATE TABLE IF NOT EXISTS dialogue_log (
-    player_id INTEGER, 
-    dialogue_id INTEGER, 
-    current BOOLEAN DEFAULT FALSE, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id), 
-    FOREIGN KEY (dialogue_id) REFERENCES dialogue_lines(dialogue_id)
-); 
-
 CREATE TABLE IF NOT EXISTS npcs (
     npc_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     description TEXT
@@ -127,10 +125,12 @@ CREATE TABLE IF NOT EXISTS dialogue_lines (
     FOREIGN KEY (unlocks_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS full_story (
-    story_element_id INTEGER PRIMARY KEY, 
-    entry TEXT NOT NULL, 
-    category TEXT
+CREATE TABLE IF NOT EXISTS dialogue_log (
+    player_id INTEGER, 
+    dialogue_id INTEGER, 
+    current BOOLEAN DEFAULT FALSE, 
+    FOREIGN KEY (player_id) REFERENCES players(player_id), 
+    FOREIGN KEY (dialogue_id) REFERENCES dialogue_lines(dialogue_id)
 ); 
 
 /* table for items in each room, by location id */

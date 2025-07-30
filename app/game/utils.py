@@ -40,22 +40,57 @@ def parse(parts, db, player_id):
                         response += command + ", "
                 response += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands."
             case _: 
-                print("The only valid one-word commands are 'clear' and 'help'")
+                response = "The only valid one-word commands are 'clear' and 'help'"
+        return response
     else: 
         command = parts[0]
         if command in commands: 
+            # get the objects currently in the room
+            room_id = get_curr_room_id(db=db)
+            object_rows = db.execute("SELECT * FROM objects WHERE location_id = ?", (room_id, ))
+            object_rows = object_rows.fetchall()
+            object_names_to_ids = {}
+            for row in object_rows: 
+                object_names_to_ids[row['name']] = row['object_id']
+                synonym_rows = db.execute("SELECT * FROM object_synonyms WHERE object_id = ?", (row['object_id'], ))
+                for s_row in synonym_rows: 
+                    object_names_to_ids[s_row['synonym']] = s_row['object_id']
+
             if "with" in parts: 
                 with_index = parts.index("with")
                 target_object_items = parts[1:with_index - 1]
-                target_object = ""
-                for i in range(len(target_object_items)): 
-                    target_object += target_object_items[i]
-                    if i != len(target_object_items) - 1: 
-                        target_object += " "
+                target_object = build_string_of_list(target_object_items)
+                target_item_items = parts[with_index + 1:]
+                target_item = build_string_of_list(target_item_items)
             else: 
+                target_object_items = parts[1:]
+                target_object = build_string_of_list(target_object_items)
+            
+            # check if the target object is valid
+            if target_object in object_names_to_ids: 
+                response = "All valid. Populate logic later. "
+            else: 
+                response = "Please enter a valid object name. The available are: "
+                object_names_and_synonyms = list(object_names_to_ids.keys())
+                object_and_synonym_ids = list(object_names_to_ids.values())
+                most_recent_object_id = None
+                object_name_list = []
+                for i in range(len(object_and_synonym_ids)): 
+                    if not most_recent_object_id or object_and_synonym_ids[i] != most_recent_object_id: 
+                        object_name_list.append(object_names_and_synonyms[i])
+                    most_recent_object_id = object_and_synonym_ids[i]
+                response += build_string_of_list(object_name_list)
+    
+    return response
 
-
-
+def build_string_of_list(list): 
+    result = ""
+    for i in range(len(list)): 
+        result += list[i]
+        if i != len(list) - 1: 
+            result += " "
+    return result
+'''
     return response
     room_id = get_curr_room_id(db=db)
     cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
@@ -110,7 +145,7 @@ def parse(parts, db, player_id):
     db.commit()
     
     return response
-
+'''
 def get_curr_room_id(db): 
     player_id = session.get('player_id')
     cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
