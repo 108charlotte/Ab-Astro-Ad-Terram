@@ -89,10 +89,30 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO quest_definitions (quest_id, quest_name, description) VALUES (?, ?, ?)", (quest_id, name, desc))
     
     locations = [
-        (0, "Control Room", "A dusty old room with storage crates all around and several mysterious-looking switches and buttons")
+        (0, "Secondary Control Room", "A dusty old room with storage crates all around and several mysterious-looking switches and buttons"), 
+        (1, "Upper Hallway", "A long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
+        (2, "Captain's Quarters"), 
+        (3, "Pilot's Quarters"),
+        (4, "Chief Engineer's Quarters"), 
+        (5, "Scientific Supervisor's Quarters"), 
+        (6, "Chief Medical Consultant's Quarters")
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
+
+    quarters_door_message = "You carefully open a slightly less fortified, although still industrial, door and pass through."
+
+    location_links = [
+        (1, 0, "You force open a very heavy and secure metal door.", 0, None), 
+        (2, 1, quarters_door_message, None, None), 
+        (3, 1, quarters_door_message, None, None), 
+        (4, 1, quarters_door_message, None, None), 
+        (5, 1, quarters_door_message, None, None), 
+        (6, 1, quarters_door_message, None, None), 
+        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None)
+    ]
+    for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
+        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) = (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
 
     story = [
         (0, "You find yourself in an abandoned control room", "Description"), 
