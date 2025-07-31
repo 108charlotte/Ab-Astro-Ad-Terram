@@ -88,7 +88,7 @@ def parse(parts, db, player_id):
                         response = "You are unable to " + command + " the " + target_object + " yet."
                     else: 
                         response = interaction_row['result']
-                        if interaction_row['gives_item_id']: 
+                        if interaction_row['gives_item_id'] is not None: 
                             # logic for adding item to inventory
                             cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()
                             inventory_item_ids = []
@@ -100,10 +100,9 @@ def parse(parts, db, player_id):
                             else: 
                                 db.execute("INSERT INTO inventory (player_id, item_id) VALUES (?, ?)", (player_id, interaction_row['gives_item_id']))
                                 item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
-                                response += "\n+1: " + item_name + ". Type 'inventory' to see full inventory."
+                                response += "\n+1: " + item_name['item_name'] + ". Type 'inventory' to see full inventory."
                 else: 
                     response = "You cannot use the command " + command + " on the " + target_object
-# TODO: add command to view inventory
             else: 
                 response = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())
@@ -123,7 +122,7 @@ def build_string_of_list(list):
     for i in range(len(list)): 
         result += list[i]
         if i != len(list) - 1: 
-            result += " "
+            result += ", "
     return result
 '''
     return response
