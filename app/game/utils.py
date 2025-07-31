@@ -84,28 +84,33 @@ def parse(parts, db, player_id):
                 cur = db.execute("SELECT * FROM object_interactions WHERE object_id = ? AND action = ?", (target_object_id, command))
                 interaction_row = cur.fetchone()
                 if interaction_row: 
-                    if interaction_row['requires_item_id']: 
+                    inventory_item_ids = get_inventory_item_ids(player_id, db)
+                    if interaction_row['requires_item_id'] and interaction_row['requires_item_id'] not in inventory_item_ids: 
                         response = "You are unable to " + command + " the " + target_object + " yet."
                     else: 
-                        response = interaction_row['result']
+                        if interaction_row['requires_item_id']: 
+                            response = interaction_row['item_requirement_usage_description']
+                            response += "\n" + interaction_row['result']
+                        elif interaction_row['location_link_id']: 
+                            cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
+                            response = cur['travel_description']
+                            # add logic for room switch
+                        else: 
+                            response = interaction_row['result']
                         if interaction_row['gives_item_id'] is not None: 
                             # logic for adding item to inventory
-                            cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()
-                            inventory_item_ids = []
-                            for row in cur: 
-                                inventory_item_ids.append(row['item_id'])
-
                             if interaction_row['gives_item_id'] in inventory_item_ids: 
                                 response = interaction_row['already_done_text']
                             else: 
                                 db.execute("INSERT INTO inventory (player_id, item_id) VALUES (?, ?)", (player_id, interaction_row['gives_item_id']))
                                 item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
                                 response += "\n+1: " + item_name['item_name'] + ". Type 'inventory' to see full inventory."
-                elif command == "inspect":
-                    cur = db.execute("SELECT * FROM objects WHERE object_id = ?", (target_object_id, )).fetchone()
-                    response = cur['description']
                 else: 
-                    response = "You cannot " + command + " the " + target_object
+                    if command == "inspect": 
+                        cur = db.execute("SELECT * FROM objects WHERE object_id = ?", (target_object_id, )).fetchone()
+                        response = cur['description']
+                    else: 
+                        response = "You cannot " + command + " the " + target_object
             else: 
                 response = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())
@@ -116,17 +121,37 @@ def parse(parts, db, player_id):
                     if not most_recent_object_id or object_and_synonym_ids[i] != most_recent_object_id: 
                         object_name_list.append(object_names_and_synonyms[i])
                     most_recent_object_id = object_and_synonym_ids[i]
-                response += build_string_of_list(object_name_list)
+                response += build_string_of_list_w_commas(object_name_list)
+        else: 
+            response = "Please enter a valid command. Available commands are " + build_string_of_list_w_commas(commands)
     
     return response
+
+def get_inventory_item_ids(player_id, db): 
+    cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()
+    inventory_item_ids = []
+    for row in cur: 
+        inventory_item_ids.append(row['item_id'])
+    return inventory_item_ids
 
 def build_string_of_list(list): 
     result = ""
     for i in range(len(list)): 
         result += list[i]
         if i != len(list) - 1: 
+            result += " "
+    return result
+
+def build_string_of_list_w_commas(list): 
+    result = ""
+    for i in range(len(list)): 
+        result += list[i]
+        if i == len(list) - 2:
+            result += ", and "
+        elif i != len(list) - 1: 
             result += ", "
     return result
+
 '''
     return response
     room_id = get_curr_room_id(db=db)

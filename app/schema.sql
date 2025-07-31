@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS player_locations (
 ); 
 
 CREATE TABLE IF NOT EXISTS location_links (
+    link_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     to_location_id INTEGER, 
     from_location_id INTEGER, 
     travel_description TEXT, 
@@ -154,6 +155,8 @@ CREATE TABLE IF NOT EXISTS object_interactions (
     requires_item_id INTEGER, 
     gives_item_id INTEGER, 
     already_done_text TEXT, 
+    location_link_id INTEGER, 
+    item_requirement_usage_description TEXT, 
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
     FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
     FOREIGN KEY (gives_item_id) REFERENCES items(item_id)

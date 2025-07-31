@@ -103,6 +103,7 @@ def populate_db():
     quarters_door_message = "You carefully open a slightly less fortified, although still industrial, door and pass through."
 
     location_links = [
+        # ids autoincrement, values start at 1
         (1, 0, "You force open a very heavy and secure metal door.", 0, None), 
         (2, 1, quarters_door_message, None, None), 
         (3, 1, quarters_door_message, None, None), 
@@ -126,7 +127,7 @@ def populate_db():
     # if the object description is empty, i need to check the description of the entry corresponding to its primary_name_id
     objects = [
         (0, 0, "crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
-        (1, 0, "door", "The only door out of the room appears to be locked. There is no discernable keyhole, but there does appear to be a digital keypad next to it. "), 
+        (1, 0, "door", "The only door out of the room appears to be locked. There is a small keyhold next to it. "), 
         (2, 0, "control panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
         (3, 0, "switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. ")
     ]
@@ -162,11 +163,17 @@ def populate_db():
     for object_id, item_id, description, requires_item_id in object_contents: 
         db.execute("INSERT OR IGNORE INTO object_contents (container_object_id, item_id, description, requires_item_id) VALUES (?, ?, ?, ?)", (object_id, item_id, description, requires_item_id))
 
+    # maybe add a location link id for doors? 
     object_interactions = [
-        (0, 0, "inspect", "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", None, 0, "Nothing else remains in the single crate you were able to open."), 
-        (1, 0, "open", "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", None, 0, "Nothing else remains in the single crate you were able to open.")
+        (0, 0, "inspect", None, 
+         "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None), 
+        (1, 0, "open", None, 
+         "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None), 
+        (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door.")
     ]
-    for interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text in object_interactions: 
-        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text) VALUES (?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text))
+    for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description in object_interactions: 
+        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description))
     
     db.commit()
