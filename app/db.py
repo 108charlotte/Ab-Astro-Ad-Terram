@@ -163,10 +163,10 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO object_contents (container_object_id, item_id, description, requires_item_id) VALUES (?, ?, ?, ?)", (object_id, item_id, description, requires_item_id))
 
     object_interactions = [
-        (0, 0, "inspect", "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", None, 0), 
-        (1, 0, "open", "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", None, 0)
+        (0, 0, "inspect", "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", None, 0, "Nothing else remains in the single crate you were able to open."), 
+        (1, 0, "open", "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", None, 0, "Nothing else remains in the single crate you were able to open.")
     ]
-    for interaction_id, object_id, action, result, requires_item_id, gives_item_id in object_interactions: 
-        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, result, requires_item_id, gives_item_id) VALUES (?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, result, requires_item_id, gives_item_id))
+    for interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text in object_interactions: 
+        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text) VALUES (?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, result, requires_item_id, gives_item_id, already_done_text))
     
     db.commit()

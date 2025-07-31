@@ -39,8 +39,17 @@ def parse(parts, db, player_id):
                     else: 
                         response += command + ", "
                 response += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands."
+            case "inventory": 
+                response = "Inventory: "
+                cur = db.execute("SELECT item_name FROM inventory JOIN items ON inventory.item_id = items.item_id WHERE player_id = ?", (player_id, )).fetchall()
+                if not cur: 
+                    response = "Your inventory is empty."
+                for i in range(len(cur)): 
+                    response += cur[i]['item_name']
+                    if i < len(cur) - 1: 
+                        response += ", "
             case _: 
-                response = "The only valid one-word commands are 'clear' and 'help'"
+                response = "The only valid one-word commands are 'clear', 'help', and 'inventory.'"
         return response
     else: 
         command = parts[0].lower()
@@ -65,7 +74,7 @@ def parse(parts, db, player_id):
             else: 
                 target_object_items = parts[1:]
                 target_object = build_string_of_list(target_object_items)
-            
+
             # TODO: when entering a new room, all object descriptions should be printed
             # TODO: work on location linking logic for actual player movement
             # TODO: enable inventory additions for object interactions
@@ -75,10 +84,26 @@ def parse(parts, db, player_id):
                 cur = db.execute("SELECT * FROM object_interactions WHERE object_id = ? AND action = ?", (target_object_id, command))
                 interaction_row = cur.fetchone()
                 if interaction_row: 
-                    response = interaction_row['result']
+                    if interaction_row['requires_item_id']: 
+                        response = "You are unable to " + command + " the " + target_object + " yet."
+                    else: 
+                        response = interaction_row['result']
+                        if interaction_row['gives_item_id']: 
+                            # logic for adding item to inventory
+                            cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()
+                            inventory_item_ids = []
+                            for row in cur: 
+                                inventory_item_ids.append(row['item_id'])
+
+                            if interaction_row['gives_item_id'] in inventory_item_ids: 
+                                response = interaction_row['already_done_text']
+                            else: 
+                                db.execute("INSERT INTO inventory (player_id, item_id) VALUES (?, ?)", (player_id, interaction_row['gives_item_id']))
+                                item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
+                                response += "\n+1: " + item_name + ". Type 'inventory' to see full inventory."
                 else: 
                     response = "You cannot use the command " + command + " on the " + target_object
-                
+# TODO: add command to view inventory
             else: 
                 response = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())

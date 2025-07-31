@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS quest_definitions (
 CREATE TABLE IF NOT EXISTS inventory (
     player_id INTEGER, 
     item_id INTEGER, 
-    quantity INTEGER DEFAULT 1,
     PRIMARY KEY (player_id, item_id),  
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (item_id) REFERENCES items(item_id)
@@ -154,6 +153,7 @@ CREATE TABLE IF NOT EXISTS object_interactions (
     result TEXT, 
     requires_item_id INTEGER, 
     gives_item_id INTEGER, 
+    already_done_text TEXT, 
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
     FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
     FOREIGN KEY (gives_item_id) REFERENCES items(item_id)
