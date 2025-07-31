@@ -101,8 +101,11 @@ def parse(parts, db, player_id):
                                 db.execute("INSERT INTO inventory (player_id, item_id) VALUES (?, ?)", (player_id, interaction_row['gives_item_id']))
                                 item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
                                 response += "\n+1: " + item_name['item_name'] + ". Type 'inventory' to see full inventory."
+                elif command == "inspect":
+                    cur = db.execute("SELECT * FROM objects WHERE object_id = ?", (target_object_id, )).fetchone()
+                    response = cur['description']
                 else: 
-                    response = "You cannot use the command " + command + " on the " + target_object
+                    response = "You cannot " + command + " the " + target_object
             else: 
                 response = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())
