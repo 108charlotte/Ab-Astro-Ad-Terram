@@ -95,6 +95,8 @@ def parse(parts, db, player_id):
                             cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
                             response = cur['travel_description']
                             db.execute("UPDATE players SET current_location_id = ? WHERE player_id = ?", (cur['to_location_id'], player_id))
+                            cur = db.execute("SELECT * FROM locations WHERE location_id = ?", (cur['to_location_id'], )).fetchall()
+                            response += cur['description']
                         else: 
                             response = interaction_row['result']
                         if interaction_row['gives_item_id'] is not None: 

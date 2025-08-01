@@ -120,6 +120,7 @@ def populate_db():
         ("What would you like to do?", "Continue"), 
         ("Hint: Try 'inspect boxes'", "Hint"), 
         ("Enter 'help' for assistance.", "Instruction"), 
+        ("See the side panel for room description. This will update as you change rooms.", "Instruction")
     ]
     for entry, category in story: 
         db.execute("INSERT OR IGNORE INTO full_story (entry, category) VALUES (?, ?)", (entry, category))
