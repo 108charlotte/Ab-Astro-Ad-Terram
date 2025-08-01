@@ -94,7 +94,7 @@ def parse(parts, db, player_id):
                         elif interaction_row['location_link_id']: 
                             cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
                             response = cur['travel_description']
-                            # add logic for room switch
+                            db.execute("UPDATE players SET current_location_id = ? WHERE player_id = ?", (cur['to_location_id'], player_id))
                         else: 
                             response = interaction_row['result']
                         if interaction_row['gives_item_id'] is not None: 
@@ -124,7 +124,7 @@ def parse(parts, db, player_id):
                 response += build_string_of_list_w_commas(object_name_list)
         else: 
             response = "Please enter a valid command. Available commands are " + build_string_of_list_w_commas(commands)
-    
+    db.commit()
     return response
 
 def get_inventory_item_ids(player_id, db): 
@@ -152,62 +152,6 @@ def build_string_of_list_w_commas(list):
             result += ", "
     return result
 
-'''
-    return response
-    room_id = get_curr_room_id(db=db)
-    cur = db.execute('SELECT * FROM objects WHERE location_id = ?', (room_id, ))
-    object_entries = cur.fetchall()
-    objects = []
-    name_to_object = {}
-    # need to update for multi-word objects
-    for i, object in enumerate(object_entries): 
-        objects.append(object['name'].lower())
-        name_to_object[object['name'].lower()] = object
-        cur = db.execute('SELECT * FROM object_synonyms WHERE object_id = ?', (object['object_id']))
-        synonyms = cur.fetchall()
-        for row in synonyms: 
-            name_to_object[row['synonym'].lower()] = object
-    if parts[0] == "clear": 
-        return response
-    elif parts[0] == "help": 
-        response = "The available commands are "
-        for i, command in enumerate(commands): 
-            if i == len(commands) - 1: 
-                response += command + ". "
-            else: 
-                response += command + ", "
-    elif len(parts) < 2: 
-        response = "Please enter at least a command and an object"
-        return response
-    elif parts[0] not in commands: 
-        response = "Please enter a valid command (inspect, grab, open)"
-        return response
-    elif parts[1] not in name_to_object and not (parts[1] + " "+ parts[2]) in name_to_object: 
-        response = "Please enter a valid object: "
-        for i, object in enumerate(objects): 
-            if i == len(objects) - 1: 
-                response += object
-            else: 
-                response += object + ", "
-        return response
-    else: 
-        if len(parts) > 2: 
-            object_name = parts[1] + " " + parts[2]
-        else: 
-            object_name = parts[1]
-        
-        if object_name not in name_to_object: 
-            # should never occur bc earlier check
-            return "Please enter a valid object"
-        
-        if parts[0] == "inspect": 
-            direct_object = name_to_object[object_name]
-            response = direct_object['description'] 
-    
-    db.commit()
-    
-    return response
-'''
 def get_curr_room_id(db): 
     player_id = session.get('player_id')
     cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))

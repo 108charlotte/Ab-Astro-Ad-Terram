@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS players (
 ); 
 
 CREATE TABLE IF NOT EXISTS full_story (
-    story_element_id INTEGER PRIMARY KEY, 
+    story_element_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     entry TEXT NOT NULL, 
     category TEXT
 ); 

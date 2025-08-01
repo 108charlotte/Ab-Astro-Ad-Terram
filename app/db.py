@@ -116,13 +116,13 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
 
     story = [
-        (0, "You find yourself in an abandoned control room", "Description"), 
-        (1, "What would you like to do?", "Continue"), 
-        (2, "Hint: Try 'inspect boxes'", "Hint"), 
-        (3, "Enter 'help' for assistance.", "Instruction"), 
+        ("You find yourself in an abandoned control room", "Description"), 
+        ("What would you like to do?", "Continue"), 
+        ("Hint: Try 'inspect boxes'", "Hint"), 
+        ("Enter 'help' for assistance.", "Instruction"), 
     ]
-    for story_id, entry, category in story: 
-        db.execute("INSERT OR IGNORE INTO full_story (story_element_id, entry, category) VALUES (?, ?, ?)", (story_id, entry, category))
+    for entry, category in story: 
+        db.execute("INSERT OR IGNORE INTO full_story (entry, category) VALUES (?, ?)", (entry, category))
     
     # if the object description is empty, i need to check the description of the entry corresponding to its primary_name_id
     objects = [
