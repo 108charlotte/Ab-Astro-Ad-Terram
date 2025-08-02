@@ -21,12 +21,6 @@ CREATE TABLE IF NOT EXISTS players (
     FOREIGN KEY (current_location_id) REFERENCES locations(location_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS full_story (
-    story_element_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    entry TEXT NOT NULL, 
-    category TEXT
-); 
-
 CREATE TABLE IF NOT EXISTS story_flags (
     story_flag_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     flag_name TEXT NOT NULL
@@ -34,11 +28,10 @@ CREATE TABLE IF NOT EXISTS story_flags (
 
 CREATE TABLE IF NOT EXISTS story_log (
     player_id INTEGER, 
-    story_id INTEGER, 
-    custom_entry TEXT, 
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id), 
-    FOREIGN KEY (story_id) REFERENCES full_story(story_element_id)
+    entry TEXT, 
+    category TEXT, 
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS quest_log (
@@ -160,17 +153,6 @@ CREATE TABLE IF NOT EXISTS object_interactions (
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
     FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
     FOREIGN KEY (gives_item_id) REFERENCES items(item_id)
-); 
-
-CREATE TABLE IF NOT EXISTS object_contents (
-    container_object_id INTEGER, 
-    item_id INTEGER, 
-    description TEXT, 
-    requires_item_id INTEGER, 
-    PRIMARY KEY (container_object_id, item_id), 
-    FOREIGN KEY (container_object_id) REFERENCES objects(object_id), 
-    FOREIGN KEY (item_id) REFERENCES items(item_id), 
-    FOREIGN KEY (requires_item_id) REFERENCES items(item_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS object_synonyms (

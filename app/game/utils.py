@@ -2,9 +2,19 @@ from flask import session
 
 def initialize_new_player(db, player_id, num_initial): 
     db.execute('INSERT INTO quest_log (player_id, quest_id, discovered, started) VALUES (?, ?, ?, ?)', (player_id, 0, True, True))
-    for i in range(num_initial): 
-        db.execute('INSERT INTO story_log (player_id, story_id) VALUES (?, ?)', (player_id, i))
+    
+    story = [
+        ("You find yourself in an abandoned control room", "Description"), 
+        ("What would you like to do?", "Continue"), 
+        ("Available objects are: crates, door, control panel, and switches", "Hint"), 
+        ("See the side panel for room description. This will update as you change rooms.", "Instruction"), 
+        ("Hint: Try 'inspect boxes'", "Hint"), 
+        ("Enter 'help' for more assistance.", "Instruction"), 
+    ]
 
+    for entry, category in story: 
+        db.execute("INSERT OR IGNORE INTO story_log (player_id, entry, category) VALUES (?, ?, ?)", (player_id, entry, category))
+    
     # just to make sure that the player's location is set
     db.execute('UPDATE players SET current_location_id = ? WHERE player_id = ?', (0, player_id))
     db.commit()
@@ -14,42 +24,45 @@ def process(text, db, player_id):
     s = ""
     parts = text.split()
     s = parse(parts, db, player_id)
-    db.execute('INSERT INTO story_log (player_id, custom_entry) VALUES (?, ?)', (player_id, s))
+    for entry, category in s: 
+        db.execute('INSERT INTO story_log (player_id, entry, category) VALUES (?, ?, ?)', (player_id, entry, category))
     db.commit()
-    return s
 
 commands = ['inspect', 'grab', 'open']
 
 # TODO: #1 clean this up
 def parse(parts, db, player_id): 
-    response = ""
+    response = [("", "")]
+    entry = ""
     if len(parts) < 1: 
-        response = "Please enter at least one word"
+        response = [("Please enter at least one word", "Warning")]
     elif len(parts) < 2: 
         command = parts[0]
         match command: 
             case "clear": 
                 db.execute('DELETE FROM story_log WHERE player_id = ?', (player_id,))
-                response = "Story log cleared"
+                response = [("Story log cleared", "Info")]
             case "help": 
-                response = "The available commands are "
+                entry = "The available commands are "
                 for i, command in enumerate(commands): 
                     if i == len(commands) - 1: 
-                        response += command + ". "
+                        entry += command + ". "
                     else: 
-                        response += command + ", "
-                response += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands."
+                        entry += command + ", "
+                entry += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands."
+                response = [(entry, "Hint")]
             case "inventory": 
-                response = "Inventory: "
+                entry = "Inventory: "
                 cur = db.execute("SELECT item_name FROM inventory JOIN items ON inventory.item_id = items.item_id WHERE player_id = ?", (player_id, )).fetchall()
                 if not cur: 
-                    response = "Your inventory is empty."
+                    entry = "Your inventory is empty."
                 for i in range(len(cur)): 
-                    response += cur[i]['item_name']
+                    entry += cur[i]['item_name']
                     if i < len(cur) - 1: 
-                        response += ", "
+                        entry += ", "
+                response = [(entry, "Info")]
             case _: 
-                response = "The only valid one-word commands are 'clear', 'help', and 'inventory.'"
+                response = [("The only valid one-word commands are 'clear', 'help', and 'inventory.'", "Warning")]
         return response
     else: 
         command = parts[0].lower()
@@ -74,7 +87,7 @@ def parse(parts, db, player_id):
             else: 
                 target_object_items = parts[1:]
                 target_object = build_string_of_list(target_object_items)
-
+            # TODO: fix that door out of control room can be opened without key
             # TODO: when entering a new room, all object descriptions should be printed
             # TODO: work on location linking logic for actual player movement
             # TODO: enable inventory additions for object interactions
@@ -86,35 +99,44 @@ def parse(parts, db, player_id):
                 if interaction_row: 
                     inventory_item_ids = get_inventory_item_ids(player_id, db)
                     if interaction_row['requires_item_id'] and interaction_row['requires_item_id'] not in inventory_item_ids: 
-                        response = "You are unable to " + command + " the " + target_object + " yet."
+                        response = [("You are unable to " + command + " the " + target_object + " yet. ", "Warning")]
                     else: 
                         if interaction_row['requires_item_id']: 
-                            response = interaction_row['item_requirement_usage_description']
-                            response += "\n" + interaction_row['result']
+                            entry = interaction_row['item_requirement_usage_description']
+                            entry += "\n" + interaction_row['result']
                         elif interaction_row['location_link_id']: 
                             cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
-                            response = cur['travel_description']
-                            db.execute("UPDATE players SET current_location_id = ? WHERE player_id = ?", (cur['to_location_id'], player_id))
-                            cur = db.execute("SELECT * FROM locations WHERE location_id = ?", (cur['to_location_id'], )).fetchall()
-                            response += cur['description']
+                            entry_1 = cur['travel_description']
+                            new_room_id = cur['to_location_id']
+                            db.execute("UPDATE players SET current_location_id = ? WHERE player_id = ?", (new_room_id, player_id))
+                            cur = db.execute("SELECT * FROM locations WHERE location_id = ?", (new_room_id, )).fetchone()
+                            entry_2 = "You find yourself in " + cur['description']
+                            entry_3 = "Available objects are: "
+                            objects_in_new_room = db.execute("SELECT * FROM objects WHERE location_id = ?", (new_room_id, )).fetchall()
+                            list_of_objects_in_new_room = []
+                            for row in objects_in_new_room: 
+                                list_of_objects_in_new_room.append(row['name'])
+                            entry_3 += build_string_of_list_w_commas(list_of_objects_in_new_room)
+                            response = [(entry_1, ""), (entry_2, ""), (entry_3, "Hint")]
                         else: 
-                            response = interaction_row['result']
+                            response = [(interaction_row['result'], "")]
                         if interaction_row['gives_item_id'] is not None: 
                             # logic for adding item to inventory
                             if interaction_row['gives_item_id'] in inventory_item_ids: 
-                                response = interaction_row['already_done_text']
+                                response.append((interaction_row['already_done_text'], ""))
                             else: 
                                 db.execute("INSERT INTO inventory (player_id, item_id) VALUES (?, ?)", (player_id, interaction_row['gives_item_id']))
                                 item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
-                                response += "\n+1: " + item_name['item_name'] + ". Type 'inventory' to see full inventory."
+                                response.append(("+1: " + item_name['item_name'], "Info"))
+                                response.append(("Type 'inventory' to view full inventory. ", "Hint"))
                 else: 
                     if command == "inspect": 
                         cur = db.execute("SELECT * FROM objects WHERE object_id = ?", (target_object_id, )).fetchone()
-                        response = cur['description']
+                        response = [(cur['description'], "")]
                     else: 
-                        response = "You cannot " + command + " the " + target_object
+                        response = [("You cannot " + command + " the " + target_object, "Warning")]
             else: 
-                response = "Please enter a valid object name. The available are: "
+                entry = "Please enter a valid object name. The available are: "
                 object_names_and_synonyms = list(object_names_to_ids.keys())
                 object_and_synonym_ids = list(object_names_to_ids.values())
                 most_recent_object_id = None
@@ -123,11 +145,18 @@ def parse(parts, db, player_id):
                     if not most_recent_object_id or object_and_synonym_ids[i] != most_recent_object_id: 
                         object_name_list.append(object_names_and_synonyms[i])
                     most_recent_object_id = object_and_synonym_ids[i]
-                response += build_string_of_list_w_commas(object_name_list)
+                entry += build_string_of_list_w_commas(object_name_list)
+                response = [(entry, "Warning")]
         else: 
-            response = "Please enter a valid command. Available commands are " + build_string_of_list_w_commas(commands)
+            response = [("Please enter a valid command. Available commands are " + build_string_of_list_w_commas(commands), "Warning")]
     db.commit()
-    return response
+    text = ""
+    for row in response: 
+        text, category = row
+    if text != "": 
+        return response
+    else: 
+        return [(entry, "")]
 
 def get_inventory_item_ids(player_id, db): 
     cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()

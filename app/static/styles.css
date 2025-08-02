@@ -132,3 +132,11 @@ input:focus {
     overflow-y: auto; 
     scroll-behavior: smooth; 
 }
+
+.Warning {
+    color: red; 
+}
+
+.Info {
+    color: rgb(79, 79, 164); 
+}

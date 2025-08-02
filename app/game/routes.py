@@ -17,7 +17,7 @@ def check_player_id_exists():
         db.commit()
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
-        initialize_new_player(db, session.get('player_id'), 4)
+        initialize_new_player(db, session.get('player_id'), 6)
         return redirect(request.path)
     else:
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
@@ -48,15 +48,7 @@ def index():
         ''', (player_id,))
         quests = cur.fetchall()
 
-        cur = db.execute('''
-            SELECT 
-                COALESCE(fs.entry, sl.custom_entry) as entry,
-                COALESCE(fs.category, 'Response') as category
-            FROM story_log sl
-            LEFT JOIN full_story fs ON sl.story_id = fs.story_element_id
-            WHERE sl.player_id = ?
-            ORDER BY sl.timestamp ASC
-        ''', (player_id,))
+        cur = db.execute("SELECT entry, category FROM story_log WHERE player_id = ? ORDER BY timestamp ASC", (player_id,))
         story_log = cur.fetchall()
 
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
