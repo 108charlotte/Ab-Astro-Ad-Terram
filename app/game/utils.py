@@ -10,8 +10,6 @@ def initialize_new_player(db, player_id):
         ("Enter 'help' for more assistance.", "Instruction"), 
     ]
 
-    # TODO: add command to view initial room info again (available objects + room desc)
-
     for entry, category in story: 
         db.execute("INSERT OR IGNORE INTO story_log (player_id, entry, category) VALUES (?, ?, ?)", (player_id, entry, category))
     
@@ -30,7 +28,6 @@ def process(text, db, player_id):
 
 commands = ['inspect', 'grab', 'open']
 
-# TODO: #1 clean this up
 def parse(parts, db, player_id): 
     response = [("", "")]
     entry = ""
@@ -87,10 +84,6 @@ def parse(parts, db, player_id):
             else: 
                 target_object_items = parts[1:]
                 target_object = build_string_of_list(target_object_items)
-            # TODO: fix that door out of control room can be opened without key
-            # TODO: when entering a new room, all object descriptions should be printed
-            # TODO: work on location linking logic for actual player movement
-            # TODO: enable inventory additions for object interactions
             # check if the target object is valid
             if target_object in object_names_to_ids: 
                 target_object_id = object_names_to_ids[target_object]
