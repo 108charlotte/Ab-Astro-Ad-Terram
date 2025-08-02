@@ -3,3 +3,4 @@
 
 ## Someday
 - [ ] draw logo for favicon
+- [ ] add story flag for control room switches

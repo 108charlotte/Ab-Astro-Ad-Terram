@@ -65,25 +65,10 @@ def populate_db_command():
 def populate_db(): 
     db = get_db()
 
-    '''
-    thinking...
-    players should populate dynamically, along with story_log and quest_log. 
-    quest_definitions needs to be populated.
-    inventory should populate dynamically. 
-    items needs to be populated. 
-    locations needs to be populated, and so does location links. 
-    story flags will populate dynamically, but the structure of this may change later. 
-    dialogue_log will populate dynamically. 
-    npcs needs to be populated. 
-    dialogue_lines needs to be populated. 
-    full_story needs to be populated. 
-    REMEMBER TO USE INSERT OR IGNORE INTO when populating each table so that I can run this command again to update later. 
-    '''
-
     locations = [
         (0, "Secondary Control Room", "a dusty old room with storage crates all around and several mysterious-looking switches and buttons"), 
         (1, "Upper Hallway", "a long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
-        (2, "Captain's Quarters", ""), 
+        (2, "Captain's Quarters", "a medium dormitory-style quarters, containing a bed on the right side of the room with a bedside table, a desk facing the wall on the left of the room, and a small wardrobe on the left wall closest to the door. "), 
         (3, "Pilot's Quarters", ""),
         (4, "Chief Engineer's Quarters", ""), 
         (5, "Scientific Supervisor's Quarters", ""), 
@@ -92,18 +77,24 @@ def populate_db():
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
 
-    quarters_door_message = "You carefully open the door and pass through. "
+    quarters_door_message = "You carefully open the door and enter the room. "
 
     location_links = [
         # ids autoincrement, values start at 1
-        (1, 0, "You force open a very heavy and secure metal door. ", 0, None), 
+        # out of control room, into hallway
+        (1, 0, "You force open a very heavy and secure metal door. ", 0, None),
+        # from hallway into dorms 
         (2, 1, quarters_door_message, None, None), 
         (3, 1, quarters_door_message, None, None), 
         (4, 1, quarters_door_message, None, None), 
         (5, 1, quarters_door_message, None, None), 
         (6, 1, quarters_door_message, None, None), 
+        # secret passageway (to-be implemented)
         (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None), 
-        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. ", None, None)
+        # into control room from hallway
+        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. ", None, None), 
+        # into hallway from dorms
+        (1, 2, quarters_door_message, None, None)
     ]
     for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
@@ -114,15 +105,22 @@ def populate_db():
         (0, 0, "crates", "Numerous crates lie across the room gathering dust. You can't discern what's inside any of them from afar. "), 
         (1, 0, "door", "The only door out of the room appears to be locked. There is a small keyhold next to it. "), 
         (2, 0, "control panel", "The control panel takes up almost half of the room. It is riddled with levers, switches, and buttons, but all of the indicator lights are off. "), 
-        #TODO: add story flag for switches + ability to activate with inspect
         (3, 0, "switches", "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. "), 
 
         # hallway
-        (4, 1, "first door on the left", hallway_door_description), 
-        (5, 1, "second door on the left", hallway_door_description), 
-        (6, 1, "first door on the right", hallway_door_description), 
-        (7, 1, "second door on the right", hallway_door_description), 
-        (8, 1, "secondary control room door", "A heavy-grade industrial metal door. ")
+        (4, 1, "first door on the left", hallway_door_description + "The door is labelled 'captain.'"), 
+        (5, 1, "second door on the left", hallway_door_description + "The door is labelled 'pilot.'"), 
+        (6, 1, "first door on the right", hallway_door_description + "The door is labelled 'chief engineer'"), 
+        (7, 1, "second door on the right", hallway_door_description + "The door is labelled 'scientific supervisor.'"), 
+        (8, 1, "third door on the right", hallway_door_description + "The door is labelled 'chief medical consultant.'"), 
+        (9, 1, "secondary control room door", "A heavy-grade industrial metal door. "), 
+
+        # captain's quarters
+        (10, 2, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of."), 
+        (11, 2, "bed", ""), 
+        (12, 2, "wardrobe", ""), 
+        (13, 2, "bedside table", ""), 
+        (14, 2, "door to hallway", hallway_door_description)
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -145,6 +143,7 @@ def populate_db():
     
     items = [
         (0, "key", "A small brass key with a diamond tail."), 
+        (1, "reports", "Several important-looking reports from the captain's desk, one from each division. ")
     ]
     for item_id, name, description in items: 
         db.execute("INSERT OR IGNORE INTO items (item_id, item_name, description) VALUES (?, ?, ?)", (item_id, name, description))
@@ -162,7 +161,12 @@ def populate_db():
         (4, 5, "open", 3, None, None, None, None, None), 
         (5, 6, "open", 4, None, None, None, None, None), 
         (6, 7, "open", 5, None, None, None, None, None), 
-        (7, 8, "open", 8, None, None, None, None, None), 
+        (7, 8, "open", 6, None, None, None, None, None), 
+        (8, 9, "open", 8, None, None, None, None, None), 
+        (9, 14, "open", 9, None, None, None, None, None), 
+        (10, 10, "inspect", None, 
+         "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of. Nevertheless, you decide to pocket any and everything that looks important, just in case you might need it later. ", 
+         None, 1, "You have taken everything from the desk that looks useful to you. ", None)
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description))
