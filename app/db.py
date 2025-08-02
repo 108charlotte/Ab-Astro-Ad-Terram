@@ -117,9 +117,9 @@ def populate_db():
 
         # captain's quarters
         (10, 2, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of."), 
-        (11, 2, "bed", ""), 
-        (12, 2, "wardrobe", ""), 
-        (13, 2, "bedside table", ""), 
+        (11, 2, "bed", "An economical metal frame with a sad-looking mattress. You wonder how anyone is able to sleep on it. "), 
+        (12, 2, "wardrobe", "When you open the doors of the wardrobe, you see a single rack and drawer. From what you can tell, there are two sets of the same blue and grey uniform. On the shirt, there is a small star logo with text beneath it reading 'astra' (see the favicon for this page for the design!). "), 
+        (13, 2, "bedside table", "A simple and unremarkable metal bedside table. Barely more than a frame, all it can fit is a single small lamp. Turning it on and off does not appear to have any effect. "), 
         (14, 2, "door to hallway", hallway_door_description)
     ]
     for object_id, location_id, name, description in objects: 
