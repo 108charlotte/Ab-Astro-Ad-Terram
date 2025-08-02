@@ -98,16 +98,14 @@ def parse(parts, db, player_id):
                 interaction_row = cur.fetchone()
                 if interaction_row: 
                     inventory_item_ids = get_inventory_item_ids(player_id, db)
-                    if interaction_row['requires_item_id'] and interaction_row['requires_item_id'] not in inventory_item_ids: 
+                    if interaction_row['requires_item_id'] is not None and interaction_row['requires_item_id'] not in inventory_item_ids: 
                         response = [("You are unable to " + command + " the " + target_object + " yet. ", "Warning")]
                     else: 
-                        special_case = False
                         if interaction_row['requires_item_id']: 
                             entry_1 = interaction_row['item_requirement_usage_description']
                             entry_2 = "\n" + interaction_row['result']
                             response.append((entry_1, ""))
                             response.append((entry_2, ""))
-                            special_case = True
                         if interaction_row['location_link_id']: 
                             cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
                             entry_1 = cur['travel_description']
@@ -124,10 +122,9 @@ def parse(parts, db, player_id):
                             response.append((entry_1, ""))
                             response.append((entry_2, ""))
                             response.append((entry_3, "Hint"))
-                            special_case = True
-                        if not special_case: 
+                        if interaction_row['result']: 
                             response = [(interaction_row['result'], "")]
-                        if interaction_row['gives_item_id'] is not None: 
+                        if interaction_row['gives_item_id'] is not None: # added is not None bc before 0 was registering as none
                             # logic for adding item to inventory
                             if interaction_row['gives_item_id'] in inventory_item_ids: 
                                 response = [(interaction_row['already_done_text'], "")]
