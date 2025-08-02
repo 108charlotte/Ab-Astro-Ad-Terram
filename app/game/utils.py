@@ -127,6 +127,15 @@ def parse(parts, db, player_id):
                                 item_name = db.execute("SELECT item_name FROM items WHERE item_id = ?", (interaction_row['gives_item_id'], )).fetchone()
                                 response.append(("+1: " + item_name['item_name'], "Info"))
                                 response.append(("Type 'inventory' to view full inventory. ", "Hint"))
+                        if interaction_row['activates_story_flag_id'] is not None: 
+                            cur = db.execute("SELECT * FROM triggered_story_flags WHERE story_flag_id = ? AND player_id = ?", (interaction_row['activates_story_flag_id'], player_id)).fetchone()
+                            if cur is not None: 
+                                response = [(interaction_row['already_done_text'], "")]
+                            else: 
+                                db.execute("INSERT INTO triggered_story_flags (player_id, story_flag_id) VALUES (?, ?)", (player_id, interaction_row['activates_story_flag_id']))
+                                story_flag_name = db.execute("SELECT * FROM story_flags WHERE story_flag_id = ?", (interaction_row['activates_story_flag_id'], )).fetchone()['flag_name']
+                                db.commit()
+                                response.append(("STORY FLAG ACTIVATED: " + story_flag_name, "Info"))
                 else: 
                     if command == "inspect": 
                         cur = db.execute("SELECT * FROM objects WHERE object_id = ?", (target_object_id, )).fetchone()

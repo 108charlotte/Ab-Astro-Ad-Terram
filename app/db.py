@@ -135,8 +135,7 @@ def populate_db():
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
 
     story_flags = [
-        (0, "Control room activated"), 
-        (1, "Key grabbed"), 
+        (0, "Secondary Control room switches"),  
     ]
     for story_flag_id, name in story_flags: 
         db.execute("INSERT OR IGNORE INTO story_flags (story_flag_id, flag_name) VALUES (?, ?)", (story_flag_id, name))
@@ -152,23 +151,26 @@ def populate_db():
     object_interactions = [
         (0, 0, "inspect", None, 
          "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", 
-         None, 0, "Nothing else remains in the single crate you were able to open.", None), 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None, None), 
         (1, 0, "open", None, 
          "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", 
-         None, 0, "Nothing else remains in the single crate you were able to open.", None), 
-        (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door."), 
-        (3, 4, "open", 2, None, None, None, None, None), 
-        (4, 5, "open", 3, None, None, None, None, None), 
-        (5, 6, "open", 4, None, None, None, None, None), 
-        (6, 7, "open", 5, None, None, None, None, None), 
-        (7, 8, "open", 6, None, None, None, None, None), 
-        (8, 9, "open", 8, None, None, None, None, None), 
-        (9, 14, "open", 9, None, None, None, None, None), 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None, None), 
+        (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door.", None), 
+        (3, 4, "open", 2, None, None, None, None, None, None), 
+        (4, 5, "open", 3, None, None, None, None, None, None), 
+        (5, 6, "open", 4, None, None, None, None, None, None), 
+        (6, 7, "open", 5, None, None, None, None, None, None), 
+        (7, 8, "open", 6, None, None, None, None, None, None), 
+        (8, 9, "open", 8, None, None, None, None, None, None), 
+        (9, 14, "open", 9, None, None, None, None, None, None), 
         (10, 10, "inspect", None, 
          "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of. Nevertheless, you decide to pocket any and everything that looks important, just in case you might need it later. ", 
-         None, 1, "You have taken everything from the desk that looks useful to you. ", None)
+         None, 1, "You have taken everything from the desk that looks useful to you. ", None, None), 
+        (11, 3, "inspect", None, 
+         "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. After fiddling with a few, you are able to make an indicator light come on, and after a few seconds of flashing the rest of the control panel lights up. ", 
+         None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0)
     ]
-    for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description in object_interactions: 
-        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description))
+    for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id in object_interactions: 
+        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id))
     
     db.commit()

@@ -84,32 +84,6 @@ CREATE TABLE IF NOT EXISTS triggered_story_flags (
     FOREIGN KEY (story_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS npcs (
-    npc_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    description TEXT
-); 
-
-CREATE TABLE IF NOT EXISTS dialogue_lines (
-    dialogue_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    npc_id INTEGER, 
-    text TEXT, 
-    next_dialogue_id INTEGER, 
-    trigger_flag_id INTEGER, 
-    unlocks_flag_id INTEGER, 
-    FOREIGN KEY (npc_id) REFERENCES npcs(npc_id), 
-    FOREIGN KEY (next_dialogue_id) REFERENCES dialogue_lines(dialogue_id), 
-    FOREIGN KEY (trigger_flag_id) REFERENCES story_flags(story_flag_id), 
-    FOREIGN KEY (unlocks_flag_id) REFERENCES story_flags(story_flag_id)
-); 
-
-CREATE TABLE IF NOT EXISTS dialogue_log (
-    player_id INTEGER, 
-    dialogue_id INTEGER, 
-    current BOOLEAN DEFAULT FALSE, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id), 
-    FOREIGN KEY (dialogue_id) REFERENCES dialogue_lines(dialogue_id)
-); 
-
 /* table for items in each room, by location id */
 
 /* 
@@ -134,9 +108,11 @@ CREATE TABLE IF NOT EXISTS object_interactions (
     already_done_text TEXT, 
     location_link_id INTEGER, 
     item_requirement_usage_description TEXT, 
+    activates_story_flag_id INTEGER, 
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
     FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
-    FOREIGN KEY (gives_item_id) REFERENCES items(item_id)
+    FOREIGN KEY (gives_item_id) REFERENCES items(item_id), 
+    FOREIGN KEY (activates_story_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS object_synonyms (
