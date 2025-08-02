@@ -17,7 +17,7 @@ def check_player_id_exists():
         db.commit()
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
-        initialize_new_player(db, session.get('player_id'), 6)
+        initialize_new_player(db, session.get('player_id'))
         return redirect(request.path)
     else:
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
@@ -40,14 +40,6 @@ def index():
     story_log = [""]
     location = ""
     if player_id: 
-        cur = db.execute('''
-            SELECT qd.quest_name, qd.description, ql.discovered, ql.started, ql.completed
-            FROM quest_log ql
-            JOIN quest_definitions qd ON ql.quest_id = qd.quest_id
-            WHERE ql.player_id = ?
-        ''', (player_id,))
-        quests = cur.fetchall()
-
         cur = db.execute("SELECT entry, category FROM story_log WHERE player_id = ? ORDER BY timestamp ASC", (player_id,))
         story_log = cur.fetchall()
 
@@ -57,7 +49,7 @@ def index():
         cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
         location = cur.fetchone()
         
-    return render_template('index.html', quests=quests, story_log=story_log, location=location)
+    return render_template('index.html', story_log=story_log, location=location)
 
 @bp.route('/', methods=['POST'])
 def user_input(): 

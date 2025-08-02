@@ -80,14 +80,6 @@ def populate_db():
     REMEMBER TO USE INSERT OR IGNORE INTO when populating each table so that I can run this command again to update later. 
     '''
 
-    # quest definitions (includes a name and description)
-    quests = [
-        (0, "Leave the room", "Exit through the door"), 
-    ]
-    # send quests to database
-    for quest_id, name, desc in quests: 
-        db.execute("INSERT OR IGNORE INTO quest_definitions (quest_id, quest_name, description) VALUES (?, ?, ?)", (quest_id, name, desc))
-    
     locations = [
         (0, "Secondary Control Room", "a dusty old room with storage crates all around and several mysterious-looking switches and buttons"), 
         (1, "Upper Hallway", "a long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
@@ -110,7 +102,8 @@ def populate_db():
         (4, 1, quarters_door_message, None, None), 
         (5, 1, quarters_door_message, None, None), 
         (6, 1, quarters_door_message, None, None), 
-        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None)
+        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None), 
+        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. ", None, None)
     ]
     for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
@@ -128,7 +121,8 @@ def populate_db():
         (4, 1, "first door on the left", hallway_door_description), 
         (5, 1, "second door on the left", hallway_door_description), 
         (6, 1, "first door on the right", hallway_door_description), 
-        (7, 1, "second door on the right", hallway_door_description)
+        (7, 1, "second door on the right", hallway_door_description), 
+        (8, 1, "secondary control room door", "A heavy-grade industrial metal door. ")
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -165,6 +159,10 @@ def populate_db():
          None, 0, "Nothing else remains in the single crate you were able to open.", None), 
         (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door."), 
         (3, 4, "open", 2, None, None, None, None, None), 
+        (4, 5, "open", 3, None, None, None, None, None), 
+        (5, 6, "open", 4, None, None, None, None, None), 
+        (6, 7, "open", 5, None, None, None, None, None), 
+        (7, 8, "open", 8, None, None, None, None, None), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description))

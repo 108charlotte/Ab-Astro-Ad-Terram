@@ -34,22 +34,6 @@ CREATE TABLE IF NOT EXISTS story_log (
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 ); 
 
-CREATE TABLE IF NOT EXISTS quest_log (
-    player_id INTEGER, 
-    quest_id INTEGER, 
-    discovered BOOLEAN DEFAULT FALSE, 
-    started BOOLEAN DEFAULT FALSE,
-    completed BOOLEAN DEFAULT FALSE, 
-    FOREIGN KEY (player_id) REFERENCES players(player_id), 
-    FOREIGN KEY (quest_id) REFERENCES quest_definitions(quest_id)
-); 
-
-CREATE TABLE IF NOT EXISTS quest_definitions (
-    quest_id INTEGER PRIMARY KEY, 
-    quest_name TEXT NOT NULL,
-    description TEXT
-); 
-
 CREATE TABLE IF NOT EXISTS inventory (
     player_id INTEGER, 
     item_id INTEGER, 

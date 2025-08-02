@@ -13,19 +13,9 @@
         <header>
             <h1 id="title">ab astra ad terram</h1>
             <h2 class="extra-info large">the journey of a fallen star</h2>
-            <span id="progress-bar"></span>
-            <span id="stats">
-                <span id="health">Health: 100</span>
-                <span id="mana">Mana: 0</span>
-                <span id="gold">Gold: 0</span>
-            </span>
         </header>
         <main>
             <div id="sidebar">
-                <h3>Quests</h3>
-                {% for quest in quests %}
-                    <p><span class="highlighted">{{ quest['quest_name'] }}</span><br><span class="extra-info">{{ quest['description'] }}</span></p>
-                {% endfor %}
                 <h3>Location: {{ location['location_name'] }}</h3>
                 <p class="extra-info">{{ location['description'] }}</p>
             </div>
