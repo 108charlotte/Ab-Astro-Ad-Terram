@@ -18,6 +18,10 @@
             <div id="sidebar">
                 <h3>Location: {{ location['location_name'] }}</h3>
                 <p class="extra-info">{{ location['description'] }}</p>
+                <h3>Available Objects: </h3>
+                {% for object in objects %}
+                    <p class="extra-info">--> {{ object['name'] }}</p>
+                {% endfor %}
             </div>
             <div id="main-content">
                 <div id="story">

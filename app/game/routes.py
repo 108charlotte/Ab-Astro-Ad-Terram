@@ -36,7 +36,7 @@ def check_player_id_exists():
 def index(): 
     db = get_db()
     player_id = session.get('player_id')
-    quests = [""]
+    objects = []
     story_log = [""]
     location = ""
     if player_id: 
@@ -48,8 +48,11 @@ def index():
         location_id = player['current_location_id']
         cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
         location = cur.fetchone()
+
+        cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
+        objects = cur
         
-    return render_template('index.html', story_log=story_log, location=location)
+    return render_template('index.html', story_log=story_log, location=location, objects=objects)
 
 @bp.route('/', methods=['POST'])
 def user_input(): 
