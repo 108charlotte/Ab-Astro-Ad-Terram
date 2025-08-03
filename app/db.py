@@ -70,9 +70,9 @@ def populate_db():
         (1, "Upper Hallway", "a long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
         (2, "Captain's Quarters", "a medium dormitory-style quarters, containing a bed on the right side of the room with a bedside table, a desk facing the wall on the left of the room, and a small wardrobe on the left wall closest to the door. "), 
         (3, "Pilot's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the left far wall, and a wardrobe on the left near wall. "),
-        (4, "Chief Engineer's Quarters", ""), 
-        (5, "Scientific Supervisor's Quarters", ""), 
-        (6, "Chief Medical Consultant's Quarters", "")
+        (4, "Chief Engineer's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. Compared to the other dormitories, it appears to be the least organized, with several items seemingly haphazardly spread around. "), 
+        (5, "Scientific Supervisor's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. There are very few items furnishing the room, and from what you can see, nothing is out of place. "), 
+        (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. ")
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
@@ -94,7 +94,11 @@ def populate_db():
         # into control room from hallway
         (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. ", None, None), 
         # into hallway from dorms
-        (1, 2, quarters_door_message, None, None)
+        (1, 2, quarters_door_message, None, None), 
+        (1, 3, quarters_door_message, None, None), 
+        (1, 4, quarters_door_message, None, None), 
+        (1, 5, quarters_door_message, None, None), 
+        (1, 6, quarters_door_message, None, None), 
     ]
     for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
@@ -130,7 +134,25 @@ def populate_db():
         (19, 3, "door to hallway", hallway_door_description), 
 
         # chief engineer's quarters
-        (20, 4, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. ")
+        (20, 4, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. "), 
+        (21, 4, "bed", "A simple, economical metal bed frame with a bare mattress. Looks uncomfortable. "), 
+        (22, 4, "wardrobe", ""), 
+        (23, 4, "bedside table", "A short and rather unremarkable metal table with no drawers. "), 
+        (24, 4, "door to hallway", hallway_door_description), 
+
+        # scientific supervisor's quarters
+        (25, 5, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition), completely empty save for a rather sad looking lamp in the corner. You cannot figure out how to turn it on, and there is nothing else you can investigate on the desk. "), 
+        (26, 5, "bed", "A simple, economical metal bed frame with a bare mattress. No-frills, and takes up no more space than it needs to. "), 
+        (27, 5, "wardrobe", ""), 
+        (28, 5, "bedside table", ""), 
+        (29, 5, "door to hallway", hallway_door_description), 
+
+        # chief medical consultant's quarters
+        (30, 6, "desk", ""), 
+        (31, 6, "bed", ""), 
+        (32, 6, "wardrobe", ""), 
+        (33, 6, "bedside table", ""), 
+        (34, 6, "door to hallway", hallway_door_description),
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -153,7 +175,8 @@ def populate_db():
     items = [
         (0, "key", "A small brass key with a diamond tail."), 
         (1, "reports", "Several important-looking reports from the captain's desk, one from each division. "), 
-        (2, "blueprints", "A collection of blueprints of the ship from the chief engineer's quarters. ")
+        (2, "blueprints", "A collection of blueprints of the ship from the chief engineer's quarters. "), 
+        (3, "keycard", "An unlabelled keycard from the chief engineer's dormitory. ")
     ]
     for item_id, name, description in items: 
         db.execute("INSERT OR IGNORE INTO items (item_id, item_name, description) VALUES (?, ?, ?)", (item_id, name, description))
@@ -167,13 +190,16 @@ def populate_db():
          "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", 
          None, 0, "Nothing else remains in the single crate you were able to open.", None, None), 
         (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door.", None), 
+        # hallway to dormitories and back to secondary control room
         (3, 4, "open", 2, None, None, None, None, None, None), 
         (4, 5, "open", 3, None, None, None, None, None, None), 
         (5, 6, "open", 4, None, None, None, None, None, None), 
         (6, 7, "open", 5, None, None, None, None, None, None), 
         (7, 8, "open", 6, None, None, None, None, None, None), 
         (8, 9, "open", 8, None, None, None, None, None, None), 
+        # captain's door to hallway
         (9, 14, "open", 9, None, None, None, None, None, None), 
+        # special interaction logics
         (10, 10, "inspect", None, 
          "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of. Nevertheless, you decide to pocket any and everything that looks important, just in case you might need it later. ", 
          None, 1, "You have taken everything from the desk that looks useful to you. ", None, None), 
@@ -181,8 +207,16 @@ def populate_db():
          "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. After fiddling with a few, you are able to make an indicator light come on, and after a few seconds of flashing the rest of the control panel lights up. ", 
          None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0), 
         (12, 20, "inspect", None, 
-         "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. ", 
+         "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of, but you decide to pocket a few anyways. Maybe they'll be useful later? ", 
          None, 2, "Nothing else on the desk is of note. ", None, None), 
+        (13, 23, "inspect", None, 
+         "A short and rather unremarkable metal table with no drawers. On  top of it you see a keycard. ", 
+         None, 3, "There is nothing else on the bedside table. ", None, None), 
+        # pilot, engineer, scientist, and medical doors to hallway
+        (14, 19, "open", 10, None, None, None, None, None, None), 
+        (15, 24, "open", 11, None, None, None, None, None, None), 
+        (16, 29, "open", 12, None, None, None, None, None, None), 
+        (17, 34, "open", 13, None, None, None, None, None, None), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id))
