@@ -69,12 +69,8 @@ CREATE TABLE IF NOT EXISTS location_links (
     to_location_id INTEGER, 
     from_location_id INTEGER, 
     travel_description TEXT, 
-    requires_item_id INTEGER, 
-    unlocks_flag_id INTEGER, 
     FOREIGN KEY (to_location_id) REFERENCES locations(location_id), 
-    FOREIGN KEY (from_location_id) REFERENCES locations(location_id), 
-    FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
-    FOREIGN KEY (unlocks_flag_id) REFERENCES story_flags(story_flag_id)
+    FOREIGN KEY (from_location_id) REFERENCES locations(location_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS triggered_story_flags (
@@ -109,10 +105,13 @@ CREATE TABLE IF NOT EXISTS object_interactions (
     location_link_id INTEGER, 
     item_requirement_usage_description TEXT, 
     activates_story_flag_id INTEGER, 
+    requires_story_flag_id INTEGER, 
+    requirements_not_fulfilled_text TEXT, 
     FOREIGN KEY (object_id) REFERENCES objects(object_id), 
     FOREIGN KEY (requires_item_id) REFERENCES items(item_id), 
     FOREIGN KEY (gives_item_id) REFERENCES items(item_id), 
-    FOREIGN KEY (activates_story_flag_id) REFERENCES story_flags(story_flag_id)
+    FOREIGN KEY (activates_story_flag_id) REFERENCES story_flags(story_flag_id), 
+    FOREIGN KEY (requires_story_flag_id) REFERENCES story_flags(story_flag_id)
 ); 
 
 CREATE TABLE IF NOT EXISTS object_synonyms (

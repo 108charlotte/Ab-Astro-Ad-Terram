@@ -72,7 +72,8 @@ def populate_db():
         (3, "Pilot's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the left far wall, and a wardrobe on the left near wall. "),
         (4, "Chief Engineer's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. Compared to the other dormitories, it appears to be the least organized, with several items seemingly haphazardly spread around. "), 
         (5, "Scientific Supervisor's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. There are very few items furnishing the room, and from what you can see, nothing is out of place. "), 
-        (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. ")
+        (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. "), 
+        (7, "Main Control Room", "an expansive control room with large windows and at least twenty chairs at the massive control panel which surrounds the room. ") # if control panel activated, can see thru windows
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
@@ -82,26 +83,30 @@ def populate_db():
     location_links = [
         # ids autoincrement, values start at 1
         # out of control room, into hallway
-        (1, 0, "You force open a very heavy and secure metal door. ", 0, None),
+        (1, 0, "You force open a very heavy and secure metal door. "),
         # from hallway into dorms 
-        (2, 1, quarters_door_message, None, None), 
-        (3, 1, quarters_door_message, None, None), 
-        (4, 1, quarters_door_message, None, None), 
-        (5, 1, quarters_door_message, None, None), 
-        (6, 1, quarters_door_message, None, None), 
+        (2, 1, quarters_door_message), 
+        (3, 1, quarters_door_message), 
+        (4, 1, quarters_door_message), 
+        (5, 1, quarters_door_message), 
+        (6, 1, quarters_door_message), 
         # secret passageway (to-be implemented)
-        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter.", None, None), 
+        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter."), 
         # into control room from hallway
-        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. ", None, None), 
+        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. "), 
         # into hallway from dorms
-        (1, 2, quarters_door_message, None, None), 
-        (1, 3, quarters_door_message, None, None), 
-        (1, 4, quarters_door_message, None, None), 
-        (1, 5, quarters_door_message, None, None), 
-        (1, 6, quarters_door_message, None, None), 
+        (1, 2, quarters_door_message), 
+        (1, 3, quarters_door_message), 
+        (1, 4, quarters_door_message), 
+        (1, 5, quarters_door_message), 
+        (1, 6, quarters_door_message), 
+        # to primary control room from hallway
+        (7, 1, "After scanning the keycard, the heavy industrial door gracefully slides open. "), 
+        # to hallway from primary control room
+        (1, 7, "The heavy industrial door gracefully slides open automatically, no keycard required. ")
     ]
-    for to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id in location_links: 
-        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id) VALUES (?, ?, ?, ?, ?)", (to_location_id, from_location_id, travel_description, requires_item_id, unlocks_flag_id))
+    for to_location_id, from_location_id, travel_description in location_links: 
+        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description) VALUES (?, ?, ?)", (to_location_id, from_location_id, travel_description))
     
     hallway_door_description = "A standard-looking grey door, less heavy-duty than the one leading to the secondary control room. "
     objects = [
@@ -153,6 +158,14 @@ def populate_db():
         (32, 6, "wardrobe", ""), 
         (33, 6, "bedside table", ""), 
         (34, 6, "door to hallway", hallway_door_description),
+
+        # hallway to primary control room
+        (35, 1, "door at end of hallway (past dorms)", "A heavy industrial-grade door, similar to the one leading to the secondary control room. You don't think you could force it open if you tried. "), 
+        # primary control room to hallway
+        (36, 7, "door to main hallway", "A heavy industrial-grade door. It opens automatically, and you don't think you could force it to open otherwise if you tried. "), 
+        # primary control room
+        (37, 7, "windows", ""), 
+        (38, 7, "control panel", ""), 
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -161,13 +174,43 @@ def populate_db():
         (0, "boxes"), 
         (1, "exit"), 
         (3, "levers"), 
-        (3, "buttons")
+        (3, "buttons"), 
+        (35, "door at end of hallway"), 
+        (35, "door at the end of the hallway"), 
+        (35, "door at the end of the hallway (past doorms)"), 
+        (35, "door past dorms"), 
+        (4, "1st door on left"), 
+        (4, "1st door on the left"),
+        (4, "first door on left"), 
+        (5, "2nd door on the left"), 
+        (5, "2nd door on left"), 
+        (5, "second door on left"), 
+        (6, "1st door on right"), 
+        (6, "1st door on the right"), 
+        (6, "first door on right"), 
+        (7, "2nd door on right"), 
+        (7, "2nd door on the right"), 
+        (7, "second door on right"), 
+        (8, "3rd door on right"), 
+        (8, "3rd door on the right"),
+        (8, "third door on right"), 
+        (37, "window"), 
+        (13, "table"), 
+        (18, "table"), 
+        (23, "table"), 
+        (28, "table"), 
+        (33, "table"), 
+        (14, "door"), 
+        (19, "door"), 
+        (24, "door"), 
+        (29, "door"), 
+        (34, "door")
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
 
     story_flags = [
-        (0, "Secondary Control room switches"),  
+        (0, "Secondary control room switches"),  
     ]
     for story_flag_id, name in story_flags: 
         db.execute("INSERT OR IGNORE INTO story_flags (story_flag_id, flag_name) VALUES (?, ?)", (story_flag_id, name))
@@ -185,40 +228,52 @@ def populate_db():
     object_interactions = [
         (0, 0, "inspect", None, 
          "After more closely inspecting the crates, you notice that a smaller one on top of one of the stacks is slightly ajar. Inside of it lies a small brass key.", 
-         None, 0, "Nothing else remains in the single crate you were able to open.", None, None), 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None, None, None, None), 
         (1, 0, "open", None, 
          "You are unable to open most of the crates. However, one small one on top of one of the stacks is slightly ajar, and when you open it you see a small brass key.", 
-         None, 0, "Nothing else remains in the single crate you were able to open.", None, None), 
-        (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door.", None), 
+         None, 0, "Nothing else remains in the single crate you were able to open.", None, None, None, None), 
+        (2, 1, "open", 1, None, 0, None, None, "You insert the brass key into the small keyhole on the side of the door.", None, None, None), 
         # hallway to dormitories and back to secondary control room
-        (3, 4, "open", 2, None, None, None, None, None, None), 
-        (4, 5, "open", 3, None, None, None, None, None, None), 
-        (5, 6, "open", 4, None, None, None, None, None, None), 
-        (6, 7, "open", 5, None, None, None, None, None, None), 
-        (7, 8, "open", 6, None, None, None, None, None, None), 
-        (8, 9, "open", 8, None, None, None, None, None, None), 
+        (3, 4, "open", 2, None, None, None, None, None, None, None, None), 
+        (4, 5, "open", 3, None, None, None, None, None, None, None, None), 
+        (5, 6, "open", 4, None, None, None, None, None, None, None, None), 
+        (6, 7, "open", 5, None, None, None, None, None, None, None, None), 
+        (7, 8, "open", 6, None, None, None, None, None, None, None, None), 
+        (8, 9, "open", 8, None, None, None, None, None, None, None, None), 
         # captain's door to hallway
-        (9, 14, "open", 9, None, None, None, None, None, None), 
+        (9, 14, "open", 9, None, None, None, None, None, None, None, None), 
         # special interaction logics
         (10, 10, "inspect", None, 
          "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of. Nevertheless, you decide to pocket any and everything that looks important, just in case you might need it later. ", 
-         None, 1, "You have taken everything from the desk that looks useful to you. ", None, None), 
+         None, 1, "You have taken everything from the desk that looks useful to you. ", None, None, None, None), 
         (11, 3, "inspect", None, 
          "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. After fiddling with a few, you are able to make an indicator light come on, and after a few seconds of flashing the rest of the control panel lights up. ", 
-         None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0), 
+         None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0, None, None), 
         (12, 20, "inspect", None, 
          "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of, but you decide to pocket a few anyways. Maybe they'll be useful later? ", 
-         None, 2, "Nothing else on the desk is of note. ", None, None), 
+         None, 2, "Nothing else on the desk is of note. ", None, None, None, None), 
         (13, 23, "inspect", None, 
          "A short and rather unremarkable metal table with no drawers. On  top of it you see a keycard. ", 
-         None, 3, "There is nothing else on the bedside table. ", None, None), 
+         None, 3, "There is nothing else on the bedside table. ", None, None, None, None), 
         # pilot, engineer, scientist, and medical doors to hallway
-        (14, 19, "open", 10, None, None, None, None, None, None), 
-        (15, 24, "open", 11, None, None, None, None, None, None), 
-        (16, 29, "open", 12, None, None, None, None, None, None), 
-        (17, 34, "open", 13, None, None, None, None, None, None), 
+        (14, 19, "open", 10, None, None, None, None, None, None, None, None), 
+        (15, 24, "open", 11, None, None, None, None, None, None, None, None), 
+        (16, 29, "open", 12, None, None, None, None, None, None, None, None), 
+        (17, 34, "open", 13, None, None, None, None, None, None, None, None), 
+        # primary control room (doors in and out)
+        (18, 35, "open", 14, None, 3, None, None, "You tap the keycard from the chief engineer's dorm on a small ID scanner next to the door. The light on the scanner changes from red to green. ", None, None, None), 
+        (19, 36, "open", 15, None, None, None, None, None, None, None, None), 
+        # primary control room (windows and control panel logic based on story flag)
+        (20, 37, "inspect", None, 
+         "Above the control panel is a beautiful view of a brownish-red planet, not like anything you've ever known. There is nothing but haze in the distance, and it is relatively flat with several hills. ", 
+         None, None, None, None, 
+         None, 0, "The windows are blacked out and you are unable to see through them. "), 
+        (21, 38, "inspect", None, 
+         "The control panel appears to be activated, just like the one in the secondary control room. There are a variety of indicator lights, but you don't understand how to operate the ship. ", 
+         None, None, None, None, 
+         None, 0, "The control panel is just like the one in the secondary control room but much, much larger, spanning every wall except for the one occupied by the door to the hallway. There are numerous buttons and switches, but pressing them has no visible effect. ")
     ]
-    for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id in object_interactions: 
-        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id))
+    for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
+        db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text))
     
     db.commit()

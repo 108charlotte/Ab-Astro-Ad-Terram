@@ -91,15 +91,25 @@ def parse(parts, db, player_id):
                 cur = db.execute("SELECT * FROM object_interactions WHERE object_id = ? AND action = ?", (target_object_id, command))
                 interaction_row = cur.fetchone()
                 if interaction_row: 
+                    story_flags = get_triggered_story_flag_ids(player_id, db)
                     inventory_item_ids = get_inventory_item_ids(player_id, db)
                     if interaction_row['requires_item_id'] is not None and interaction_row['requires_item_id'] not in inventory_item_ids: 
-                        response = [("You are unable to " + command + " the " + target_object + " yet. ", "Warning")]
+                        if interaction_row['requirements_not_fulfilled_text']: 
+                            response = [(interaction_row['requirements_not_fulfilled_text'], "")]
+                        else: 
+                            response = [("You are unable to " + command + " the " + target_object + " yet. ", "Warning")]
+                    elif interaction_row['requires_story_flag_id'] is not None and interaction_row['requires_story_flag_id'] not in story_flags: 
+                        if interaction_row['requirements_not_fulfilled_text']: 
+                            response = [(interaction_row['requirements_not_fulfilled_text'], "")]
+                        else: 
+                            response = [("You are unable to " + command + " the " + target_object + " yet. ", "Warning")]
                     else: 
                         if interaction_row['requires_item_id']: 
                             entry_1 = interaction_row['item_requirement_usage_description']
-                            entry_2 = "\n" + interaction_row['result']
                             response.append((entry_1, ""))
-                            response.append((entry_2, ""))
+                            if interaction_row['result']: 
+                                entry_2 = "\n" + interaction_row['result']
+                                response.append((entry_2, ""))
                         if interaction_row['location_link_id']: 
                             cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
                             entry_1 = cur['travel_description']
@@ -164,6 +174,13 @@ def parse(parts, db, player_id):
         return response
     else: 
         return [(entry, "")]
+
+def get_triggered_story_flag_ids(player_id, db): 
+    cur = db.execute("SELECT story_flag_id FROM triggered_story_flags WHERE player_id = ?", (player_id, )).fetchall()
+    story_flag_ids = []
+    for row in cur: 
+        story_flag_ids.append(row['story_flag_id'])
+    return story_flag_ids
 
 def get_inventory_item_ids(player_id, db): 
     cur = db.execute("SELECT item_id FROM inventory WHERE player_id = ?", (player_id, )).fetchall()
