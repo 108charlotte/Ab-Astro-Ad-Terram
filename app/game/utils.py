@@ -48,7 +48,7 @@ def parse(parts, db, player_id):
                         entry += command + ", "
                 entry += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands. "
                 response = [(entry, "Hint")]
-                response.append(("Also, check the left side bar for a location description and available objects. ", "Hint"))
+                response.append(("Also, check the left side bar for a location, description, and available objects. ", "Hint"))
             case "inventory": 
                 entry = "Inventory: "
                 cur = db.execute("SELECT item_name FROM inventory JOIN items ON inventory.item_id = items.item_id WHERE player_id = ?", (player_id, )).fetchall()
