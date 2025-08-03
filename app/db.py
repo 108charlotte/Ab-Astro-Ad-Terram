@@ -69,7 +69,7 @@ def populate_db():
         (0, "Secondary Control Room", "a dusty old room with storage crates all around and several mysterious-looking switches and buttons"), 
         (1, "Upper Hallway", "a long, bare corridor with sharp turns and uniform walls of aluminum and large bolts holding the plates together"), 
         (2, "Captain's Quarters", "a medium dormitory-style quarters, containing a bed on the right side of the room with a bedside table, a desk facing the wall on the left of the room, and a small wardrobe on the left wall closest to the door. "), 
-        (3, "Pilot's Quarters", ""),
+        (3, "Pilot's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the left far wall, and a wardrobe on the left near wall. "),
         (4, "Chief Engineer's Quarters", ""), 
         (5, "Scientific Supervisor's Quarters", ""), 
         (6, "Chief Medical Consultant's Quarters", "")
@@ -116,11 +116,21 @@ def populate_db():
         (9, 1, "secondary control room door", "A heavy-grade industrial metal door. "), 
 
         # captain's quarters
-        (10, 2, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family, reports from each department (science, engineering, medical), but nothing you can make any sense of."), 
+        (10, 2, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family and other miscellaneous papers, but nothing you can make any sense of."), 
         (11, 2, "bed", "An economical metal frame with a sad-looking mattress. You wonder how anyone is able to sleep on it. "), 
-        (12, 2, "wardrobe", "When you open the doors of the wardrobe, you see a single rack and drawer. From what you can tell, there are two sets of the same blue and grey uniform. On the shirt, there is a small star logo with text beneath it reading 'astra' (see the favicon for this page for the design!). "), 
+        (12, 2, "wardrobe", "When you open the doors of the wardrobe, you see a single rack and drawer. From what you can tell, there are two sets of the same blue and grey uniform. On the shirt, there is a small star logo with embroidered text beneath it reading 'astra' (see the favicon for this page for the design!), and beneath that there is more text reading 'CAPTAIN.'"), 
         (13, 2, "bedside table", "A simple and unremarkable metal bedside table. Barely more than a frame, all it can fit is a single small lamp. Turning it on and off does not appear to have any effect. "), 
-        (14, 2, "door to hallway", hallway_door_description)
+        (14, 2, "door to hallway", hallway_door_description), 
+
+        # pilot's quarters
+        (15, 3, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The desk is entirely empty save for a lamp, which you cannot get to turn on despite pressing the switch several times. "), 
+        (16, 3, "bed", "A simple, economical metal bed frame with a bare mattress. It looks awfully uncomfortable. "),
+        (17, 3, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astra' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'PILOT.' "), 
+        (18, 3, "bedside table", "A short metal table with no drawers and nothing on it. As unremarkable as the bed. "), 
+        (19, 3, "door to hallway", hallway_door_description), 
+
+        # chief engineer's quarters
+        (20, 4, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. ")
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -142,7 +152,8 @@ def populate_db():
     
     items = [
         (0, "key", "A small brass key with a diamond tail."), 
-        (1, "reports", "Several important-looking reports from the captain's desk, one from each division. ")
+        (1, "reports", "Several important-looking reports from the captain's desk, one from each division. "), 
+        (2, "blueprints", "A collection of blueprints of the ship from the chief engineer's quarters. ")
     ]
     for item_id, name, description in items: 
         db.execute("INSERT OR IGNORE INTO items (item_id, item_name, description) VALUES (?, ?, ?)", (item_id, name, description))
@@ -168,7 +179,10 @@ def populate_db():
          None, 1, "You have taken everything from the desk that looks useful to you. ", None, None), 
         (11, 3, "inspect", None, 
          "There is an assortment of odd-looking switches and buttons splayed across the massive control panel. After fiddling with a few, you are able to make an indicator light come on, and after a few seconds of flashing the rest of the control panel lights up. ", 
-         None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0)
+         None, None, "The indicator lights do not appear to turn off or change, no matter how many switches you press. ", None, 0), 
+        (12, 20, "inspect", None, 
+         "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. ", 
+         None, 2, "Nothing else on the desk is of note. ", None, None), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id))
