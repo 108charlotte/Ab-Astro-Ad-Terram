@@ -1,6 +1,5 @@
 # text_adventure_game
+This is my second attempt at a flask-based text adventure game, this time using SQL! 
 
-# to set up in powershell
-$env:FLASK_APP = "app:create_app"
-$env:FLASK_DEBUG = "1"
-flask run
+## why i made it
+I wanted to create a text adventure game since my last attempt didn't live up to my expectations. Although I had tried to make it scalable, 
