@@ -127,7 +127,7 @@ def parse(parts, db, player_id):
                             response.append((entry_2, ""))
                             response.append((entry_3, "Hint"))
                         if interaction_row['result']: 
-                            response = [(interaction_row['result'], "")]
+                            response.append((interaction_row['result'], ""))
                         if interaction_row['gives_item_id'] is not None: # added is not None bc before 0 was registering as none
                             # logic for adding item to inventory
                             if interaction_row['gives_item_id'] in inventory_item_ids: 

@@ -218,14 +218,16 @@ def populate_db():
         (40, "ship"),
         (36, "door"),
         (9, "door to secondary control room"), 
-        (9, "secondary control room")
+        (9, "secondary control room"), 
+        (35, "control room")
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
 
     story_flags = [
-        (0, "Secondary control room switches"), 
-        (1, "Trapped outside")
+        (0, "secondary control room switches"), 
+        (1, "trapped outside"), 
+        (2, "ship opened")
     ]
     for story_flag_id, name in story_flags: 
         db.execute("INSERT OR IGNORE INTO story_flags (story_flag_id, flag_name) VALUES (?, ?)", (story_flag_id, name))
@@ -288,15 +290,15 @@ def populate_db():
          None, None, None, None, 
          None, 0, "The control panel is just like the one in the secondary control room but much, much larger, spanning every wall except for the one occupied by the door to the hallway. There are numerous buttons and switches, but pressing them has no visible effect. "), 
         (22, 39, "inspect", 16, 
-         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. ", 
+         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. ", 
          None, None, None, None, 1, 0, 
          "A heavily insulated and fortified emergency exit door. "), 
         (23, 39, "open", 16, 
-         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. ", 
+         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. ", 
          None, None, None, None, 1, 0, 
          None), 
-        (24, 40, "open", 17, "You are unable to return to the ship. ", None, None, None, None, None, None, None), 
-        (25, 40, "open", 17, "You are unable to return to the ship. ", None, None, None, None, None, None, None), 
+        (24, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
+        (25, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text))
