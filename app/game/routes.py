@@ -9,8 +9,8 @@ def make_session_permanent():
 
 @bp.before_app_request
 def check_player_id_exists():
-    db = get_db()
     player_id = session.get('player_id')
+    db = get_db()
 
     if not player_id:
         cur = db.execute('INSERT INTO players (nickname, current_location_id) VALUES (?, ?)', ('Guest', 1))
@@ -51,8 +51,10 @@ def index():
 
         cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
         objects = cur
-        
-    return render_template('index.html', story_log=story_log, location=location, objects=objects)
+    error = False
+    if not db: 
+        error = True
+    return render_template('index.html', story_log=story_log, location=location, objects=objects, error=error)
 
 @bp.route('/', methods=['POST'])
 def user_input(): 

@@ -73,7 +73,8 @@ def populate_db():
         (4, "Chief Engineer's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. Compared to the other dormitories, it appears to be the least organized, with several items seemingly haphazardly spread around. "), 
         (5, "Scientific Supervisor's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. There are very few items furnishing the room, and from what you can see, nothing is out of place. "), 
         (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. "), 
-        (7, "Main Control Room", "an expansive control room with large windows and at least twenty chairs at the massive control panel which surrounds the room. ") # if control panel activated, can see thru windows
+        (7, "Main Control Room", "an expansive control room with large windows and at least twenty chairs at the massive control panel which surrounds the room. "), # if control panel activated, can see thru windows
+        (8, "Planet", "A dusty, red, and unknown frontier. "), 
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
@@ -103,7 +104,10 @@ def populate_db():
         # to primary control room from hallway
         (7, 1, "After scanning the keycard, the heavy industrial door gracefully slides open. "), 
         # to hallway from primary control room
-        (1, 7, "The heavy industrial door gracefully slides open automatically, no keycard required. ")
+        (1, 7, "The heavy industrial door gracefully slides open automatically, no keycard required. "), 
+        # out the emergency exit in the primary control room
+        (8, 7, "After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. "), 
+        (7, 8, ""), 
     ]
     for to_location_id, from_location_id, travel_description in location_links: 
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description) VALUES (?, ?, ?)", (to_location_id, from_location_id, travel_description))
@@ -141,22 +145,22 @@ def populate_db():
         # chief engineer's quarters
         (20, 4, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The top is scattered with blueprints of the ship and miscellaneous technical diagrams which you have trouble making sense of. "), 
         (21, 4, "bed", "A simple, economical metal bed frame with a bare mattress. Looks uncomfortable. "), 
-        (22, 4, "wardrobe", ""), 
+        (22, 4, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astro' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'CHIEF ENGINEER.' "), 
         (23, 4, "bedside table", "A short and rather unremarkable metal table with no drawers. "), 
         (24, 4, "door to hallway", hallway_door_description), 
 
         # scientific supervisor's quarters
         (25, 5, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition), completely empty save for a rather sad looking lamp in the corner. You cannot figure out how to turn it on, and there is nothing else you can investigate on the desk. "), 
         (26, 5, "bed", "A simple, economical metal bed frame with a bare mattress. No-frills, and takes up no more space than it needs to. "), 
-        (27, 5, "wardrobe", ""), 
-        (28, 5, "bedside table", ""), 
+        (27, 5, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astro' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'SCIENTIFIC SUPERVISOR.' "), 
+        (28, 5, "bedside table", "A short metal table with a small lamp and no drawers. "), 
         (29, 5, "door to hallway", hallway_door_description), 
 
         # chief medical consultant's quarters
-        (30, 6, "desk", ""), 
-        (31, 6, "bed", ""), 
-        (32, 6, "wardrobe", ""), 
-        (33, 6, "bedside table", ""), 
+        (30, 6, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) with a small lamp without a bulb. "), 
+        (31, 6, "bed", "A simple and economical metal bed frame with a very stiff mattress. "), 
+        (32, 6, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astro' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'CHIEF MEDICAL OFFICER.' "), 
+        (33, 6, "bedside table", "A short metal table with nothing on it and no drawers. "), 
         (34, 6, "door to hallway", hallway_door_description),
 
         # hallway to primary control room
@@ -164,8 +168,12 @@ def populate_db():
         # primary control room to hallway
         (36, 7, "door to main hallway", "A heavy industrial-grade door. It opens automatically, and you don't think you could force it to open otherwise if you tried. "), 
         # primary control room
+        # no descriptions because object_interactions table handles all logic
         (37, 7, "windows", ""), 
         (38, 7, "control panel", ""), 
+        # emergency exit, way to base camp + planet
+        (39, 7, "emergency exit", ""), 
+        (40, 8, "emergency exit", ""), 
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -204,13 +212,20 @@ def populate_db():
         (19, "door"), 
         (24, "door"), 
         (29, "door"), 
-        (34, "door")
+        (34, "door"), 
+        (39, "exit"), 
+        (40, "exit"), 
+        (40, "ship"),
+        (36, "door"),
+        (9, "door to secondary control room"), 
+        (9, "secondary control room")
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
 
     story_flags = [
-        (0, "Secondary control room switches"),  
+        (0, "Secondary control room switches"), 
+        (1, "Trapped outside")
     ]
     for story_flag_id, name in story_flags: 
         db.execute("INSERT OR IGNORE INTO story_flags (story_flag_id, flag_name) VALUES (?, ?)", (story_flag_id, name))
@@ -271,7 +286,17 @@ def populate_db():
         (21, 38, "inspect", None, 
          "The control panel appears to be activated, just like the one in the secondary control room. There are a variety of indicator lights, but you don't understand how to operate the ship. ", 
          None, None, None, None, 
-         None, 0, "The control panel is just like the one in the secondary control room but much, much larger, spanning every wall except for the one occupied by the door to the hallway. There are numerous buttons and switches, but pressing them has no visible effect. ")
+         None, 0, "The control panel is just like the one in the secondary control room but much, much larger, spanning every wall except for the one occupied by the door to the hallway. There are numerous buttons and switches, but pressing them has no visible effect. "), 
+        (22, 39, "inspect", 16, 
+         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. ", 
+         None, None, None, None, 1, 0, 
+         "A heavily insulated and fortified emergency exit door. "), 
+        (23, 39, "open", 16, 
+         "When you approach the emergency exit, you begin to hear a hissing noise and after a few moments, it pops open. ", 
+         None, None, None, None, 1, 0, 
+         None), 
+        (24, 40, "open", 17, "You are unable to return to the ship. ", None, None, None, None, None, None, None), 
+        (25, 40, "open", 17, "You are unable to return to the ship. ", None, None, None, None, None, None, None), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text))

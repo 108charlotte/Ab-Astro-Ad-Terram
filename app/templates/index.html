@@ -16,6 +16,9 @@
             <h2 class="extra-info large">the journey of a fallen star</h2>
         </header>
         <main>
+            {% if error %}
+                <p class="Warning">The database has not yet initialized. Please refresh the page. </p>
+            {% else %}
             <div id="sidebar">
                 <h3>Location: {{ location['location_name'] }}</h3>
                 <p class="extra-info">{{ location['description'] }}</p>
@@ -36,6 +39,7 @@
                     </form>
                 </div>
             </div>
+            {% endif %}
         </main>
         <script>
             window.onload = function () {
