@@ -75,6 +75,8 @@ def populate_db():
         (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. "), 
         (7, "Main Control Room", "an expansive control room with large windows and at least twenty chairs at the massive control panel which surrounds the room. "), # if control panel activated, can see thru windows
         (8, "Planet", "A dusty, red, and unknown frontier. "), 
+        (9, "Long Trail", "Exactly what it sounds like. "), 
+        (10, "Base Camp", "A run-down and abandoned permanent camp, consisting of several large tents. To the right, there are a small cluster of rectangular tents. To your left, there are three large, rectangular tents with clear walls, inside of them rows of unidentifyable fauna. And at the middle of the camp, there is a cluster of very large circular tents. ")
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
@@ -108,6 +110,12 @@ def populate_db():
         # out the emergency exit in the primary control room
         (8, 7, "After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. "), 
         (7, 8, ""), 
+        # planet to trail and back
+        (9, 8, "You set out for a long hike on the trail. "), 
+        (8, 9, "You return from the trail, and are greeted by a massive spaceship. "), 
+        # trail to camp and back
+        (10, 9, "You emerge from a long walk into a man-made outpost. "), 
+        (9, 10, "You set back on the trail, leaving behind the remnants of humanity for the vast unknown. ")
     ]
     for to_location_id, from_location_id, travel_description in location_links: 
         db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description) VALUES (?, ?, ?)", (to_location_id, from_location_id, travel_description))
@@ -174,6 +182,11 @@ def populate_db():
         # emergency exit, way to base camp + planet
         (39, 7, "emergency exit", ""), 
         (40, 8, "emergency exit", ""), 
+        # trail objects (for transportation)
+        (41, 8, "trail pathway", "You can barely make out a dusty trail leading into the hazy red..."), 
+        (42, 9, "trail pathway (away from ship)", "You can almost see several looming structures in the distance. "), 
+        (43, 9, "trail pathway (towards ship)", "The path you arrived on. You cannot see the ship in the distance, but you know its out there somewhere. "), 
+        (44, 9, "trail pathway (towards ship)", "The long path back to the ship disappears into the red haze. ")
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -185,7 +198,7 @@ def populate_db():
         (3, "buttons"), 
         (35, "door at end of hallway"), 
         (35, "door at the end of the hallway"), 
-        (35, "door at the end of the hallway (past doorms)"), 
+        (35, "door at the end of the hallway (past dorms)"), 
         (35, "door past dorms"), 
         (4, "1st door on left"), 
         (4, "1st door on the left"),
@@ -219,7 +232,29 @@ def populate_db():
         (36, "door"),
         (9, "door to secondary control room"), 
         (9, "secondary control room"), 
-        (35, "control room")
+        (35, "control room"), 
+        (41, "trail"), 
+        (41, "pathway"), 
+        (42, "trail pathway (to ship)"), 
+        (42, "trail pathway to ship"), 
+        (42, "trail pathway towards ship"), 
+        (42, "trail to ship"), 
+        (42, "trail (to ship)"), 
+        (42, "trail towards ship"), 
+        (42, "trail (towards ship)"), 
+        (43, "trail pathway (from ship)"), 
+        (43, "trail pathway away from ship"), 
+        (43, "trail pathway from ship"), 
+        (43, "trail from ship"), 
+        (43, "trail away from ship"), 
+        (43, "trail (from ship)"), 
+        (44, "trail pathway (to ship)"), 
+        (44, "trail pathway to ship"), 
+        (44, "trail pathway towards ship"), 
+        (44, "trail (to ship)"), 
+        (44, "trail to ship"), 
+        (44, "trail towards ship"), 
+        (44, "trail (towards ship)"), 
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
@@ -299,6 +334,8 @@ def populate_db():
          None), 
         (24, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
         (25, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
+        (26, 41, "inspect", 18, None, None, None, None, None, None, None, None, None), 
+        (27, )
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text))
