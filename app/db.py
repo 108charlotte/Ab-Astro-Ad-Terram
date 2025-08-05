@@ -127,14 +127,14 @@ def populate_db():
         # captain's quarters
         (10, 2, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition) and miscellaneous papers scattered across it with no apparent connections to each other. There are a few postcards, several letters from family and other miscellaneous papers, but nothing you can make any sense of."), 
         (11, 2, "bed", "An economical metal frame with a sad-looking mattress. You wonder how anyone is able to sleep on it. "), 
-        (12, 2, "wardrobe", "When you open the doors of the wardrobe, you see a single rack and drawer. From what you can tell, there are two sets of the same blue and grey uniform. On the shirt, there is a small star logo with embroidered text beneath it reading 'astra' (see the favicon for this page for the design!), and beneath that there is more text reading 'CAPTAIN.'"), 
+        (12, 2, "wardrobe", "When you open the doors of the wardrobe, you see a single rack and drawer. From what you can tell, there are two sets of the same blue and grey uniform. On the shirt, there is a small star logo with embroidered text beneath it reading 'astro' (see the favicon for this page for the design!), and beneath that there is more text reading 'CAPTAIN.'"), 
         (13, 2, "bedside table", "A simple and unremarkable metal bedside table. Barely more than a frame, all it can fit is a single small lamp. Turning it on and off does not appear to have any effect. "), 
         (14, 2, "door to hallway", hallway_door_description), 
 
         # pilot's quarters
         (15, 3, "desk", "A simple metal desk frame, with locked drawers (appears to use fingerprint recognition). The desk is entirely empty save for a lamp, which you cannot get to turn on despite pressing the switch several times. "), 
         (16, 3, "bed", "A simple, economical metal bed frame with a bare mattress. It looks awfully uncomfortable. "),
-        (17, 3, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astra' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'PILOT.' "), 
+        (17, 3, "wardrobe", "Opening the doors of the wardrobe reveals two blue and grey uniforms, each with a logo and embroidered text beneath them reading 'astro' (see page favicon for what this looks like!). Beneath the logo and text, there is more text reading 'PILOT.' "), 
         (18, 3, "bedside table", "A short metal table with no drawers and nothing on it. As unremarkable as the bed. "), 
         (19, 3, "door to hallway", hallway_door_description), 
 

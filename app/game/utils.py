@@ -46,7 +46,7 @@ def parse(parts, db, player_id):
                         entry += command + ". "
                     else: 
                         entry += command + ", "
-                entry += ". Additionally, you can use the clear command to clear the console, and the help command to view all possible commands. "
+                entry += "Additionally, you can use the clear command to clear the console, and the help command to view all possible commands. "
                 response = [(entry, "Hint")]
                 response.append(("Also, check the left side bar for a location, description, and available objects. ", "Hint"))
             case "inventory": 
