@@ -334,7 +334,7 @@ def populate_db():
          None), 
         (24, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
         (25, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
-        (26, 41, "inspect", 18, None, None, None, None, None, None, None, None, None), 
+        (26, 41, "inspect", 18, None, None, None, None, None, None, None, None), 
         
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
