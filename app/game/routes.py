@@ -1,7 +1,8 @@
 from flask import render_template, session, redirect, request, url_for
 from app.game import bp
 from app.db import get_db
-from .utils import initialize_new_player, process, parse, get_curr_room_id
+from .utils import initialize_new_player, process
+import uuid
 
 @bp.before_app_request
 def make_session_permanent(): 
@@ -9,6 +10,10 @@ def make_session_permanent():
 
 @bp.before_app_request
 def check_player_id_exists():
+
+    if 'session_uuid' not in session: 
+        session['session_uuid'] = str(uuid.uuid4())
+
     player_id = session.get('player_id')
     db = get_db()
 
@@ -23,7 +28,8 @@ def check_player_id_exists():
         player = cur.fetchone()
 
         if player is None:
-            session.pop('player_id')
+            session.clear()
+            session['session_uuid'] = str(uuid.uuid4())
             print(f"No player found with id {player_id}. Resetting session player_id.")
         else:
             if player['current_location_id'] is None:

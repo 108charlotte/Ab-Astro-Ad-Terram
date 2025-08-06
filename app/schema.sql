@@ -16,7 +16,6 @@
 
 CREATE TABLE IF NOT EXISTS players (
     player_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nickname TEXT NOT NULL, 
     current_location_id INTEGER, 
     FOREIGN KEY (current_location_id) REFERENCES locations(location_id)
 ); 
