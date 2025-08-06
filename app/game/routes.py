@@ -51,9 +51,9 @@ def index():
 
         cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
         objects = cur
-    error = False
-    if not story_log or not location or not objects: 
-        error = True
+        error = False
+        if not player_id: 
+            error = True
     return render_template('index.html', story_log=story_log, location=location, objects=objects, error=error)
 
 @bp.route('/', methods=['POST'])
