@@ -13,7 +13,7 @@ def check_player_id_exists():
     db = get_db()
 
     if not player_id:
-        cur = db.execute('INSERT INTO players (nickname, current_location_id) VALUES (?, ?)', ('Guest', 1))
+        cur = db.execute('INSERT INTO players (nickname, current_location_id) VALUES (?, ?)', ('Guest', 0))
         db.commit()
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
