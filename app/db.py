@@ -12,7 +12,6 @@ def init_app(app):
     app.cli.add_command(reset_db_command)
 
 def get_db(): 
-    print('Current config keys:', current_app.config.keys())
     if 'db' not in g: 
         g.db = sqlite3.connect(
             current_app.config['DATABASE'], 
