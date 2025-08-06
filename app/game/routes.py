@@ -50,6 +50,11 @@ def index():
         location = cur.fetchone()
         print(f"Location query result: {dict(location) if location else 'None'}")
 
+        # checking all locations in the location database to debug location id 0 not found
+        cur = db.execute('SELECT location_id, location_name FROM locations ORDER BY location_id')
+        all_locations = cur.fetchall()
+        print(f"All locations in database: {[(loc['location_id'], loc['location_name']) for loc in all_locations]}")
+
         cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
         objects = cur
     error = False
