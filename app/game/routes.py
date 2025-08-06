@@ -18,6 +18,7 @@ def check_player_id_exists():
         session['player_id'] = cur.lastrowid
         print(f"Created new player with id {cur.lastrowid}")
         initialize_new_player(db, session.get('player_id'))
+        return redirect('/')
     else:
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
         player = cur.fetchone()
