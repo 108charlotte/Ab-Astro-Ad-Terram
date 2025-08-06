@@ -83,41 +83,40 @@ def populate_db():
     quarters_door_message = "You carefully open the door and enter the room. "
 
     location_links = [
-        # ids autoincrement, values start at 1
         # out of control room, into hallway
-        (1, 0, "You force open a very heavy and secure metal door. "),
+        (1, 1, 0, "You force open a very heavy and secure metal door. "),
         # from hallway into dorms 
-        (2, 1, quarters_door_message), 
-        (3, 1, quarters_door_message), 
-        (4, 1, quarters_door_message), 
-        (5, 1, quarters_door_message), 
-        (6, 1, quarters_door_message), 
+        (2, 2, 1, quarters_door_message), 
+        (3, 3, 1, quarters_door_message), 
+        (4, 4, 1, quarters_door_message), 
+        (5, 5, 1, quarters_door_message), 
+        (6, 6, 1, quarters_door_message), 
         # secret passageway (to-be implemented)
-        (5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter."), 
+        (7, 5, 6, "You are able to crawl through a tight squeeze-space and emerge from behind a cloth concealing the entrance on the other end, like you had to brush aside to enter."), 
         # into control room from hallway
-        (0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. "), 
+        (8, 0, 1, "You force open a very heavy and secure metal door. No key is required to get through on this side. "), 
         # into hallway from dorms
-        (1, 2, quarters_door_message), 
-        (1, 3, quarters_door_message), 
-        (1, 4, quarters_door_message), 
-        (1, 5, quarters_door_message), 
-        (1, 6, quarters_door_message), 
+        (9, 1, 2, quarters_door_message), 
+        (10, 1, 3, quarters_door_message), 
+        (11, 1, 4, quarters_door_message), 
+        (12, 1, 5, quarters_door_message), 
+        (13, 1, 6, quarters_door_message), 
         # to primary control room from hallway
-        (7, 1, "After scanning the keycard, the heavy industrial door gracefully slides open. "), 
+        (14, 7, 1, "After scanning the keycard, the heavy industrial door gracefully slides open. "), 
         # to hallway from primary control room
-        (1, 7, "The heavy industrial door gracefully slides open automatically, no keycard required. "), 
+        (15, 1, 7, "The heavy industrial door gracefully slides open automatically, no keycard required. "), 
         # out the emergency exit in the primary control room
-        (8, 7, "After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. "), 
-        (7, 8, ""), 
+        (16, 8, 7, "After the door opens, a stairway unfurls beneath it and you walk down to the planet's floor. The moment you step off of the last stair, the stairway quickly retracts and you hear the door slam behind you. "), 
+        (17, 7, 8, ""), 
         # planet to trail and back
-        (9, 8, "You set out for a long hike on the trail. "), 
-        (8, 9, "You return from the trail, and are greeted by a massive spaceship. "), 
+        (18, 9, 8, "You set out for a long hike on the trail. "), 
+        (19, 8, 9, "You return from the trail, and are greeted by a massive spaceship. "), 
         # trail to camp and back
-        (10, 9, "You emerge from a long walk into a man-made outpost. "), 
-        (9, 10, "You set back on the trail, leaving behind the remnants of humanity for the vast unknown. ")
+        (20, 10, 9, "You emerge from a long walk into a man-made outpost. "), 
+        (21, 9, 10, "You set back on the trail, leaving behind the remnants of humanity for the vast unknown. ")
     ]
-    for to_location_id, from_location_id, travel_description in location_links: 
-        db.execute("INSERT OR IGNORE INTO location_links (to_location_id, from_location_id, travel_description) VALUES (?, ?, ?)", (to_location_id, from_location_id, travel_description))
+    for location_link_id, to_location_id, from_location_id, travel_description in location_links: 
+        db.execute("INSERT OR IGNORE INTO location_links (location_link_id, to_location_id, from_location_id, travel_description) VALUES (?, ?, ?, ?)", (location_link_id, to_location_id, from_location_id, travel_description))
     
     hallway_door_description = "A standard-looking grey door, less heavy-duty than the one leading to the secondary control room. "
     objects = [
@@ -182,10 +181,10 @@ def populate_db():
         (39, 7, "emergency exit", ""), 
         (40, 8, "emergency exit", ""), 
         # trail objects (for transportation)
-        (41, 8, "trail pathway", "You can barely make out a dusty trail leading into the hazy red..."), 
-        (42, 9, "trail pathway (away from ship)", "You can almost see several looming structures in the distance. "), 
+        (41, 8, "trail pathway", "You slowly trudge along the trail, barely able to see the gritty ground beneath you through the red haze. "), 
+        (42, 9, "trail pathway (away from ship)", "You trudge on, and in the distance several large, looming structures begin to emerge. "), 
         (43, 9, "trail pathway (towards ship)", "The path you arrived on. You cannot see the ship in the distance, but you know its out there somewhere. "), 
-        (44, 9, "trail pathway (towards ship)", "The long path back to the ship disappears into the red haze. ")
+        (44, 10, "trail pathway (towards ship)", "You slowly trudge back to the ship with minimal visibility. ")
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -232,28 +231,53 @@ def populate_db():
         (9, "door to secondary control room"), 
         (9, "secondary control room"), 
         (35, "control room"), 
+        
+        # Object 41: Planet trail (goes to Long Trail)
         (41, "trail"), 
         (41, "pathway"), 
-        (42, "trail pathway (to ship)"), 
-        (42, "trail pathway to ship"), 
-        (42, "trail pathway towards ship"), 
-        (42, "trail to ship"), 
-        (42, "trail (to ship)"), 
-        (42, "trail towards ship"), 
-        (42, "trail (towards ship)"), 
-        (43, "trail pathway (from ship)"), 
-        (43, "trail pathway away from ship"), 
-        (43, "trail pathway from ship"), 
-        (43, "trail from ship"), 
-        (43, "trail away from ship"), 
-        (43, "trail (from ship)"), 
+        (41, "trail to ship"),
+        (41, "path"),
+        
+        # Object 42: Long Trail "away from ship" (goes to Base Camp)
+        (42, "trail pathway (to camp)"), 
+        (42, "trail pathway to camp"), 
+        (42, "trail to camp"), 
+        (42, "trail (to camp)"), 
+        (42, "trail towards camp"),
+        (42, "trail (towards camp)"),
+        (42, "pathway to camp"),
+        (42, "pathway towards camp"),
+        (42, "trail away from ship"),
+        (42, "trail (away from ship)"),
+        (42, "pathway away from ship"),
+        
+        # Object 43: Long Trail "towards ship" (goes back to Planet)
+        (43, "trail pathway (to ship)"), 
+        (43, "trail pathway to ship"), 
+        (43, "trail pathway towards ship"), 
+        (43, "trail to ship"), 
+        (43, "trail (to ship)"), 
+        (43, "trail towards ship"), 
+        (43, "trail (towards ship)"),
+        (43, "pathway to ship"),
+        (43, "pathway towards ship"),
+        (43, "trail back"),
+        (43, "path back"),
+        (43, "return"),
+        
+        # Object 44: Base Camp trail (goes back to Long Trail)
         (44, "trail pathway (to ship)"), 
         (44, "trail pathway to ship"), 
         (44, "trail pathway towards ship"), 
         (44, "trail (to ship)"), 
         (44, "trail to ship"), 
         (44, "trail towards ship"), 
-        (44, "trail (towards ship)"), 
+        (44, "trail (towards ship)"),
+        (44, "trail back"),
+        (44, "pathway back"),
+        (44, "trail to trail"),
+        (44, "return to trail"),
+        (44, "leave camp"),
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
@@ -334,7 +358,9 @@ def populate_db():
         (24, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
         (25, 40, "open", 17, "", None, None, None, None, None, 2, "You are unable to return to the ship. "), 
         (26, 41, "inspect", 18, None, None, None, None, None, None, None, None), 
-        
+        (28, 43, "inspect", 19, None, None, None, None, None, None, None, None), 
+        (29, 42, "inspect", 20, None, None, None, None, None, None, None, None), 
+        (30, 44, "inspect", 21, None, None, None, None, None, None, None, None), 
     ]
     for interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text in object_interactions: 
         db.execute("INSERT OR IGNORE INTO object_interactions (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction_id, object_id, action, location_link_id, result, requires_item_id, gives_item_id, already_done_text, item_requirement_usage_description, activates_story_flag_id, requires_story_flag_id, requirements_not_fulfilled_text))

@@ -45,6 +45,7 @@ def index():
     objects = []
     story_log = [""]
     location = ""
+
     if player_id: 
         cur = db.execute("SELECT entry, category FROM story_log WHERE player_id = ? ORDER BY timestamp ASC", (player_id,))
         story_log = cur.fetchall()
@@ -64,6 +65,7 @@ def index():
 
         cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
         objects = cur
+    
     error = False
     if not player_id: 
         error = True

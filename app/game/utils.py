@@ -26,7 +26,7 @@ def process(text, db, player_id):
         db.execute('INSERT INTO story_log (player_id, entry, category) VALUES (?, ?, ?)', (player_id, entry, category))
     db.commit()
 
-commands = ['inspect', 'grab', 'open']
+commands = ['inspect', 'open']
 
 def parse(parts, db, player_id): 
     response = [("", "")]
