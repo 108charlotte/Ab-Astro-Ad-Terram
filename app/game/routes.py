@@ -48,6 +48,7 @@ def index():
         print("Looking for location id: " + str(location_id))
         cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
         location = cur.fetchone()
+        print(f"Location query result: {dict(location) if location else 'None'}")
 
         cur = db.execute("SELECT * FROM objects WHERE location_id = ?", (location_id, )).fetchall()
         objects = cur
