@@ -35,6 +35,11 @@ def check_player_id_exists():
 def index(): 
     db = get_db()
     player_id = session.get('player_id')
+
+    print("IP: " + str(request.remote_addr))
+    print("Player id: " + str(player_id))
+    print("Session: " + str(dict(session)))
+
     objects = []
     story_log = [""]
     location = ""
