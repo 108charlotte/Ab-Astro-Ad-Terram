@@ -45,6 +45,7 @@ def index():
         cur = db.execute('SELECT * FROM players WHERE player_id = ?', (player_id,))
         player = cur.fetchone()
         location_id = player['current_location_id']
+        print("Looking for location id: " + str(location_id))
         cur = db.execute('SELECT * FROM locations WHERE location_id = ?', (location_id,))
         location = cur.fetchone()
 
