@@ -111,7 +111,7 @@ def parse(parts, db, player_id):
                                 entry_2 = "\n" + interaction_row['result']
                                 response.append((entry_2, ""))
                         if interaction_row['location_link_id']: 
-                            cur = db.execute("SELECT * FROM location_links WHERE link_id = ?", (interaction_row['location_link_id'], )).fetchone()
+                            cur = db.execute("SELECT * FROM location_links WHERE location_link_id = ?", (interaction_row['location_link_id'], )).fetchone()
                             entry_1 = cur['travel_description']
                             new_room_id = cur['to_location_id']
                             db.execute("UPDATE players SET current_location_id = ? WHERE player_id = ?", (new_room_id, player_id))

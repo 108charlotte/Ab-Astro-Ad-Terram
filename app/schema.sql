@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS player_locations (
 ); 
 
 CREATE TABLE IF NOT EXISTS location_links (
-    link_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    location_link_id INTEGER PRIMARY KEY, 
     to_location_id INTEGER, 
     from_location_id INTEGER, 
     travel_description TEXT, 

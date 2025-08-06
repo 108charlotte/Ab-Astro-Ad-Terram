@@ -73,9 +73,9 @@ def populate_db():
         (5, "Scientific Supervisor's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardrobe on the near left wall. There are very few items furnishing the room, and from what you can see, nothing is out of place. "), 
         (6, "Chief Medical Consultant's Quarters", "a medium dormitory-style quarters, with a bed and bedside table on the right, a desk on the far left wall, and a wardobe on the near left wall. Everything is very orderly and nothing appears to be out of place. "), 
         (7, "Main Control Room", "an expansive control room with large windows and at least twenty chairs at the massive control panel which surrounds the room. "), # if control panel activated, can see thru windows
-        (8, "Planet", "A dusty, red, and unknown frontier. "), 
-        (9, "Long Trail", "Exactly what it sounds like. "), 
-        (10, "Base Camp", "A run-down and abandoned permanent camp, consisting of several large tents. To the right, there are a small cluster of rectangular tents. To your left, there are three large, rectangular tents with clear walls, inside of them rows of unidentifyable fauna. And at the middle of the camp, there is a cluster of very large circular tents. ")
+        (8, "Planet", "a dusty, red, and unknown frontier. "), 
+        (9, "Long Trail", "exactly what it sounds like. "), 
+        (10, "Base Camp", "a run-down and abandoned permanent camp, consisting of several large tents. To the right, there are a small cluster of rectangular tents. To your left, there are three large, rectangular tents with clear walls, inside of them rows of unidentifyable fauna. And at the middle of the camp, there is a cluster of very large circular tents. ")
     ]
     for location_id, name, desc in locations:
         db.execute("INSERT OR IGNORE INTO locations (location_id, location_name, description) VALUES (?, ?, ?)", (location_id, name, desc))
