@@ -184,7 +184,12 @@ def populate_db():
         (41, 8, "trail pathway", "You slowly trudge along the trail, barely able to see the gritty ground beneath you through the red haze. "), 
         (42, 9, "trail pathway (away from ship)", "You trudge on, and in the distance several large, looming structures begin to emerge. "), 
         (43, 9, "trail pathway (towards ship)", "The path you arrived on. You cannot see the ship in the distance, but you know its out there somewhere. "), 
-        (44, 10, "trail pathway (towards ship)", "You slowly trudge back to the ship with minimal visibility. ")
+        (44, 10, "trail pathway (towards ship)", "You slowly trudge back to the ship with minimal visibility. "), 
+
+        # base camp
+        (45, 10, "left tent cluster", "Several large rectangular tents with clear walls. Inside you see rows of plants--these must be greenhouses. "), 
+        (46, 10, "middle tent cluster", "A small cluster of three massive management tents. They are at the center of the camp and look important. "), 
+        (47, 10, "right tent cluster", "A small rectangular tent cluster with five tents, about a third of the size of the central tent cluster. "), 
     ]
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
@@ -278,6 +283,36 @@ def populate_db():
         (44, "trail to trail"),
         (44, "return to trail"),
         (44, "leave camp"),
+
+        # base camp tent clusters
+        # 45 = left tents, greenhouses, greenhouse, plants, clear-wall tents, clear wall tents, clear-wall tent cluster, clear wall tent cluster
+        (45, "left tents"), 
+        (45, "greenhouses"), 
+        (45, "greenhouse"), 
+        (45, "plants"), 
+        (45, "clear-wall tents"), 
+        (45, "clear wall tents"), 
+        (45, "clear-wall tent cluster"), 
+        (45, "clear wall tent cluster"), 
+        
+        # 46 = main tent, middle tents, large tent cluster, main tent cluster
+        (46, "main tent"), 
+        (46, "middle tents"), 
+        (46, "big tents"), 
+        (46, "big tent"), 
+        (46, "main tents"), 
+        (46, "large tent cluster"), 
+        (46, "large tents"), 
+        (46, "main tent cluster"), 
+        (46, "main tents"), 
+
+        # 47 = right tents, residential tents, shelters, sleeping units, shelter, sleeping unit
+        (47, "right tents"), 
+        (47, "residential tents"), 
+        (47, "shelters"), 
+        (47, "sleeping units"), 
+        (47, "shelter"), 
+        (47, "sleeping unit"), 
     ]
     for object_id, synonym in object_synonyms: 
         db.execute("INSERT OR IGNORE INTO object_synonyms (object_id, synonym) VALUES (?, ?)", (object_id, synonym))
