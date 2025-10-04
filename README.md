@@ -1,7 +1,7 @@
 # text_adventure_game
 This is my second attempt at a flask-based text adventure game, this time using SQL! 
 
-### live link: [https://web-production-9946d.up.railway.app/](https://108charlotte.pythonanywhere.com/)
+### live link: (https://108charlotte.pythonanywhere.com/)
 * if you don't see anything for a second or it doesn't look like it populated right, just reload the page! also, since this application is built on sqlite, every time the flask app is re-initialized the database is reset too, so your data is not saved permanently--although this is a feature I may work on in the future, it is not my main goal at the moment! 
 
 ## why i made it
