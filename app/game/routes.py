@@ -10,6 +10,8 @@ def make_session_permanent():
 
 @bp.before_app_request
 def check_player_id_exists():
+    if request.endpoint and request.endpoint.startswith('static'):
+        return
 
     if 'session_uuid' not in session: 
         session['session_uuid'] = str(uuid.uuid4())
