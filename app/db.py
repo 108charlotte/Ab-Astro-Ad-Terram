@@ -194,6 +194,7 @@ def populate_db():
     for object_id, location_id, name, description in objects: 
         db.execute("INSERT OR IGNORE INTO objects (object_id, location_id, name, description) VALUES (?, ?, ?, ?)", (object_id, location_id, name, description))
     
+    # need a better system for this—possibly incorporate an API backend? but that might slow down command processing...
     object_synonyms = [
         (0, "boxes"), 
         (1, "exit"), 
