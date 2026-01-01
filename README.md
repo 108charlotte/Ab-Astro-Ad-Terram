@@ -1,4 +1,4 @@
-# text_adventure_game
+# Ab Astro Ad Terram
 This is my second attempt at a flask-based text adventure game, this time using SQL! 
 
 ### live link: https://108charlotte.pythonanywhere.com/
